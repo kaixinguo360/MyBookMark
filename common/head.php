@@ -2,6 +2,7 @@
 	<head>
 	<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable="no""/>
+	<meta name="referrer" content="never">
 	<link href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
     <link href="./css/main.css" rel="stylesheet">
     <script src="//code.jquery.com/jquery.js"></script>
