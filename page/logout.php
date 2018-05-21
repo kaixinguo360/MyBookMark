@@ -2,8 +2,5 @@
 
 $_SESSION["user"] = "";
 
-?>
+jump_to("./login.php");
 
-<script>
-location.href="./login.php"
-</script>

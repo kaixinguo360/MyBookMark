@@ -3,6 +3,7 @@
 # Get Data
 $info = $_GET['info'];
 $url = $_GET['url'];
+$tags = $_GET['tags'];
 
 # Check Data
 if($url) {
@@ -10,24 +11,27 @@ if($url) {
     $id = md5($url);
     # Add Data To Database
     $result = $db -> query("insert into $data_table (id, url, info) values ('$id', '$url', '$info');");
+    $added = $result;
+    if($added && $tags) {
+        $tags = explode(",", $tags);
+        foreach($tags as $tag) {
+            $tag = trim($tag);
+            if($tag) {
+                $result = $db -> query("SELECT id FROM $tag_table WHERE name='$tag';");
+                if(!$result -> num_rows) {
+                    $result = $db -> query("INSERT INTO $tag_table (name) VALUES ('$tag');");
+                    $result = $db -> query("SELECT id FROM $tag_table WHERE name='$tag';");
+                }
+                $array = $result -> fetch_array();
+	            $tag_id = $array['id'];
+                
+                $result = $db -> query("insert into $map_table (data_id, tag_id) values ('$id', $tag_id);");
+            }
+        }
+    }
 }
 
 ?>
-
-<style>
-.grid-item {
-    margin-bottom: 8px;
-    box-shadow: 2px 4px 6px #888888;
-}
-.grid-item-info {
-    max-height:200px;
-    margin:8px 0 0 0;
-    padding:0 8px 8px 8px;
-    word-wrap:break-word;
-    overflow:hidden;
-    text-overflow:ellipsis;
-}
-</style>
 
 <div class="panel-heading">
 	添加图片
@@ -35,7 +39,7 @@ if($url) {
 <div class="panel-body" style="max-width:400px; margin: 0 auto;">
     <?php 
         if($url) {
-            $status = $result ? "成功" : "失败<br>".mysqli_error($db);
+            $status = $added ? "成功" : "失败<br>".mysqli_error($db);
             
             #Display Data
             echo '
@@ -68,6 +72,9 @@ if($url) {
         <input name="action" value="add" hidden=true/>
         <div class="form-group" id="inputdiv">
             <input class="form-control inputbox" id="url" placeholder="URL" type="text" name="url" />
+        </div>
+        <div class="form-group" id="inputdiv">
+            <input class="form-control inputbox" id="tags" placeholder="Tags" type="text" name="tags" />
         </div>
         <div class="form-group" id="inputdiv">
             <textarea class="form-control inputbox" id="info" placeholder="Info" type="text" name="info" style="height:40%;"></textarea>

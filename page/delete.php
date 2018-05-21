@@ -7,7 +7,10 @@ $verified = $_GET['verified'];
 # Delete Data
 if($id && $verified == "true") {
     $result = $db -> query("DELETE FROM $data_table WHERE id='$id';");
-    $deleted = TRUE;
+    $deleted = $result;
+    if($deleted) {
+        $result = $db -> query("DELETE FROM $map_table WHERE data_id='$id';");
+    }
 } else {
     $result = $db -> query("SELECT id,info,url FROM $data_table WHERE id='$id';");
 	$array = $result -> fetch_array();
@@ -17,36 +20,15 @@ if($id && $verified == "true") {
 
 ?>
 
-<style>
-.grid-item {
-    margin-bottom: 8px;
-    box-shadow: 2px 4px 6px #888888;
-}
-.grid-item-info {
-    max-height:200px;
-    margin:8px 0 0 0;
-    padding:0 8px 8px 8px;
-    word-wrap:break-word;
-    overflow:hidden;
-    text-overflow:ellipsis;
-}
-</style>
-
 <div class="panel-heading">
 	删除图片
 </div>
 <div class="panel-body" style="max-width:400px; margin: 0 auto;">
     <?php 
-        if($deleted) {
-            $status = $result ? "成功" : "失败<br>".mysqli_error($db);
-            echo "
-                <div class='text-center' style='margin-top:10px;'>
-                    <p>更新${status}！</p>
-                </div>
-                <script>
-                    location.href='?';
-                </script>
-                ";
+        if($id && $verified == "true") {
+            $status = $deleted ? "成功" : "失败<br>".mysqli_error($db);
+            show_text("删除${status}！");
+            jump_to("?");
         } else {
             echo "
     <br>
