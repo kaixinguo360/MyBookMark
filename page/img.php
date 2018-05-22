@@ -43,7 +43,7 @@ $(window).resize(resize);
 </script>
 
 <div class="panel-heading">
-	详情
+	<a href="?">详情</a>
 </div>
 <div class="panel-body text-center grid-div">
 	<div class="grid">

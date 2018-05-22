@@ -36,7 +36,7 @@ $(window).resize(resize);
 </script>
 
 <div class="panel-heading">
-	图片<?php if($tag) echo " - $tag"; ?>
+	<a href="?action=tags">图片<?php if($tag) echo " - $tag"; ?></a>
 </div>
 <div class="panel-body text-center grid-div">
 	<a class="btn btn-info" href="?action=add">&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;</a>

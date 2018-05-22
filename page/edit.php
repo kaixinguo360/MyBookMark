@@ -44,7 +44,7 @@ if(isset($_GET['info'])) {
 ?>
 
 <div class="panel-heading">
-	编辑图片
+	<a href="?">编辑图片</a>
 </div>
 <div class="panel-body" style="max-width:400px; margin: 0 auto;">
     <?php 

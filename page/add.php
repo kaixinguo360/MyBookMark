@@ -34,7 +34,7 @@ if($url) {
 ?>
 
 <div class="panel-heading">
-	添加图片
+	<a href="?">添加图片</a>
 </div>
 <div class="panel-body" style="max-width:400px; margin: 0 auto;">
     <?php 

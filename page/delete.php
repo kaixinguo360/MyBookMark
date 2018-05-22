@@ -21,7 +21,7 @@ if($id && $verified == "true") {
 ?>
 
 <div class="panel-heading">
-	删除图片
+	<a href="?">删除图片</a>
 </div>
 <div class="panel-body" style="max-width:400px; margin: 0 auto;">
     <?php 
