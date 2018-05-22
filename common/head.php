@@ -7,7 +7,8 @@
     <link href="./css/main.css" rel="stylesheet">
     <script src="//code.jquery.com/jquery.js"></script>
     <script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-	<title><?php echo $title ?></title>
+	<script src="//unpkg.com/masonry-layout@4/dist/masonry.pkgd.js"></script>
+    <title><?php echo $title ?></title>
 	</head>
 
 	<body bgColor=#004994 style="padding-top: 25px">

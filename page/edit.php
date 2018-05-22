@@ -30,6 +30,13 @@ if(isset($_GET['info'])) {
         }
     }
 } else {
+    # Get All Tags
+    $result = $db -> query("SELECT name FROM $tag_table;");
+    for ($i = 0; $i < $result -> num_rows; $i++) {
+    	$tags[$result -> fetch_array()['name']] = "";
+    }
+
+    # Get Tags Of Img
     $result = $db -> query("SELECT info,url FROM $data_table WHERE id='$id';");
 	$array = $result -> fetch_array();
 	$url = $array['url'];
@@ -37,7 +44,7 @@ if(isset($_GET['info'])) {
 	
 	$result = $db -> query("SELECT $tag_table.name FROM $map_table,$tag_table WHERE $map_table.tag_id=$tag_table.id AND $map_table.data_id='$id';");
 	for ($i = 0; $i < $result -> num_rows; $i++) {
-		$tags .= " " . $result -> fetch_array()['name'] . ",";
+		$tags[$result -> fetch_array()['name']] = "true";
 	}
 }
 
@@ -59,8 +66,9 @@ if(isset($_GET['info'])) {
         <input name='id' value='$id' hidden=true/>
         <input name='url' value='$url' hidden=true/>
         <pre>$url</pre>
-        <div class='form-group' id='inputdiv'>
-            <input class='form-control inputbox' id='tags' placeholder='Tags' type='text' name='tags' value='$tags' />
+        <div class='form-group' >";
+        list_tag_edit($tags);
+        echo "
         </div>
         <div class='form-group' id='inputdiv'>
             <textarea class='form-control inputbox' id='info' placeholder='Info' type='text' name='info' style='height:40%;'>$info</textarea>

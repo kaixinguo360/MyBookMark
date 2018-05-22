@@ -29,6 +29,12 @@ if($url) {
             }
         }
     }
+} else {
+    # Get All Tags
+    $result = $db -> query("SELECT name FROM $tag_table;");
+    for ($i = 0; $i < $result -> num_rows; $i++) {
+    	$tags[$result -> fetch_array()['name']] = "";
+    }
 }
 
 ?>
@@ -66,21 +72,22 @@ if($url) {
             ;}
             echo "</div></a>";
         } else {
-            echo '
+            echo "
     <br>
-    <form method="get">
-        <input name="action" value="add" hidden=true/>
-        <div class="form-group" id="inputdiv">
-            <input class="form-control inputbox" id="url" placeholder="URL" type="text" name="url" />
+    <form method='get'>
+        <input name='action' value='add' hidden=true/>
+        <div class='form-group' id='inputdiv'>
+            <input class='form-control inputbox' id='url' placeholder='URL' type='text' name='url' />
         </div>
-        <div class="form-group" id="inputdiv">
-            <input class="form-control inputbox" id="tags" placeholder="Tags" type="text" name="tags" />
+        <div class='form-group' >";
+        list_tag_edit($tags);
+        echo "
         </div>
-        <div class="form-group" id="inputdiv">
-            <textarea class="form-control inputbox" id="info" placeholder="Info" type="text" name="info" style="height:40%;"></textarea>
+        <div class='form-group' id='inputdiv'>
+            <textarea class='form-control inputbox' id='info' placeholder='Info' type='text' name='info' style='height:40%;'></textarea>
         </div>
-		<input class="btn btn-info" type="submit" value="&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;">
+		<input class='btn btn-info' type='submit' value='&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;'>
 	</form>
-	';}
+	";}
     ?>
 </div>

@@ -51,8 +51,7 @@ item("<a href='$link_url'><img width=100% src='$url' alt='$info' /></a>"
 );
 }
 
-function list_tag($tags) {
-echo "<div class='tags'>";
+function list_tags($tags) {
 if($tags) {
     foreach($tags as $tag) {
 	    echo"
@@ -70,5 +69,18 @@ if($tags) {
 	    </div>
     ";
 }
+}
+
+function list_tag($tags) {
+echo "<div class='tags'>";
+list_tags($tags);
 echo "</div>";
+}
+
+function list_tag_edit($tags, $fold = false) {
+$tags_tmp = $tags;
+$fold_tmp = $fold;
+require("./page/common/tag_edit.php");
+unset($tags_tmp);
+unset($fold_tmp);
 }

@@ -15,7 +15,6 @@ for ($i = 0; $i < $result -> num_rows; $i++) {
 
 ?>
 
-<script src="//unpkg.com/masonry-layout@4/dist/masonry.pkgd.js"></script>
 <script>
 function resize() {
     $('.tags').masonry({
@@ -34,7 +33,10 @@ $(window).resize(resize);
 <div class="panel-body text-center grid-div">
 	<div class='info' >
         <div style='margin:0 10px 0 10px;'>
-        <?php list_tag($tags); ?>
+            <div class='tags'>
+                <a href='?tag=_NULL_'><div class='tag'>无标签</div></a>
+                <?php list_tags($tags); ?>
+            </div>
 	    </div>
     </div>
 </div>

@@ -19,7 +19,6 @@ for ($i = 0; $i < $result_tags -> num_rows; $i++) {
 
 ?>
 
-<script src="//unpkg.com/masonry-layout@4/dist/masonry.pkgd.js"></script>
 <script>
 function resize() {
     if($(window).width() > 1010) {

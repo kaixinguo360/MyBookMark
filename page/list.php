@@ -5,7 +5,12 @@ $tag = $_GET["tag"];
 
 # Get Data
 if($tag) {
-	$result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag';");
+    if($tag == "_NULL_") {
+        $tag = "无标签";
+        $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table);");
+    } else {
+        $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag';");
+    }
 } else {
 	$result=$db->query("SELECT id,info,url FROM $data_table;");
 }
@@ -17,7 +22,6 @@ if(!$result)  {
 
 ?>
 
-<script src="//unpkg.com/masonry-layout@4/dist/masonry.pkgd.js"></script>
 <script>
 function resize() {
     if($(window).width() > 404) {
