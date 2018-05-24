@@ -44,7 +44,12 @@ $(window).resize(resize);
 </div>
 <div class="panel-body text-center grid-div">
 	<a class="btn btn-info" href="?action=add">&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;</a>
-	<?php if($tag && $tag != "无标签") {echo "&nbsp;&nbsp;&nbsp;<a class='btn btn-danger' href='?action=deletetag&tag=$tag'>&nbsp;&nbsp;&nbsp;删除标签&nbsp;&nbsp;&nbsp;</a>";} ?>
+	<?php if($tag && $tag != "无标签") {
+	    echo "<div style='margin-top:16px;'>";
+	    echo "&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href='?action=edittag&tag=$tag'>&nbsp;&nbsp;&nbsp;编辑标签&nbsp;&nbsp;&nbsp;</a>";
+	    echo "&nbsp;&nbsp;&nbsp;<a class='btn btn-danger' href='?action=deletetag&tag=$tag'>&nbsp;&nbsp;&nbsp;删除标签&nbsp;&nbsp;&nbsp;</a>";
+	    echo "</div>";
+    } ?>
 	<br>
 	<br>
 	<div class="grid">
