@@ -8,27 +8,8 @@ $id = $_GET['id'];
 
 # Check Data
 if(isset($_GET['info'])) {
-    # Add Data To Database
-    $result = $db -> query("UPDATE $data_table SET info='$info' WHERE id='$id';");
-    $updated = $result;
-    if($updated && isset($_GET['tags'])) {
-        $result = $db -> query("DELETE FROM $map_table WHERE data_id='$id';");
-        $tags = explode(",", $tags);
-        foreach($tags as $tag) {
-            $tag = trim($tag);
-            if($tag) {
-                $result = $db -> query("SELECT id FROM $tag_table WHERE name='$tag';");
-                if(!$result -> num_rows) {
-                    $result = $db -> query("INSERT INTO $tag_table (name) VALUES ('$tag');");
-                    $result = $db -> query("SELECT id FROM $tag_table WHERE name='$tag';");
-                }
-                $array = $result -> fetch_array();
-	            $tag_id = $array['id'];
-                
-                $result = $db -> query("insert into $map_table (data_id, tag_id) values ('$id', $tag_id);");
-            }
-        }
-    }
+	$tags = explode(",", $tags);
+    $updated = update_item($id, $url, $info, $tags);
 } else {
     # Get All Tags
     $result = $db -> query("SELECT name FROM $tag_table;");

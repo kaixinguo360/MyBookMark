@@ -6,11 +6,7 @@ $verified = $_GET['verified'];
 
 # Delete Data
 if($id && $verified == "true") {
-    $result = $db -> query("DELETE FROM $data_table WHERE id='$id';");
-    $deleted = $result;
-    if($deleted) {
-        $result = $db -> query("DELETE FROM $map_table WHERE data_id='$id';");
-    }
+    $deleted = delete_item($id);
 } else {
     $result = $db -> query("SELECT id,info,url FROM $data_table WHERE id='$id';");
 	$array = $result -> fetch_array();

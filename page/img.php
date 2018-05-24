@@ -56,6 +56,7 @@ for ($i = 0; $i < $result -> num_rows; $i++) {
 	$time = $array['time'];
 	item_image_linked($url, $info, $url);
 }
+show_models($id);
 ?>
         <div class='grid-item info'>
             <div class='info' >

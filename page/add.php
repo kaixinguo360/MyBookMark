@@ -7,28 +7,9 @@ $tags = $_GET['tags'];
 
 # Check Data
 if($url) {
-    #Get ID
-    $id = md5($url);
-    # Add Data To Database
-    $result = $db -> query("insert into $data_table (id, url, info) values ('$id', '$url', '$info');");
-    $added = $result;
-    if($added && $tags) {
-        $tags = explode(",", $tags);
-        foreach($tags as $tag) {
-            $tag = trim($tag);
-            if($tag) {
-                $result = $db -> query("SELECT id FROM $tag_table WHERE name='$tag';");
-                if(!$result -> num_rows) {
-                    $result = $db -> query("INSERT INTO $tag_table (name) VALUES ('$tag');");
-                    $result = $db -> query("SELECT id FROM $tag_table WHERE name='$tag';");
-                }
-                $array = $result -> fetch_array();
-	            $tag_id = $array['id'];
-                
-                $result = $db -> query("insert into $map_table (data_id, tag_id) values ('$id', $tag_id);");
-            }
-        }
-    }
+    # Add to Database
+	$tags = explode(",", $tags);
+    $added = add_item($url, $info, $tags);
 } else {
     # Get All Tags
     $result = $db -> query("SELECT name FROM $tag_table;");

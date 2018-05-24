@@ -84,3 +84,81 @@ require("./page/common/tag_edit.php");
 unset($tags_tmp);
 unset($fold_tmp);
 }
+
+function run_sql($sql) {
+    global $db;
+    return $db -> query($sql);
+}
+
+function set_item_tag($id, $tags) {
+	global $db, $data_table, $map_table, $tag_table;
+	
+	foreach($tags as $tag) {
+            $tag = trim($tag);
+            if($tag) {
+                $result = $db -> query("SELECT id FROM $tag_table WHERE name='$tag';");
+                if(!$result -> num_rows) {
+                    $result = $db -> query("INSERT INTO $tag_table (name) VALUES ('$tag');");
+                    $result = $db -> query("SELECT id FROM $tag_table WHERE name='$tag';");
+                }
+                $array = $result -> fetch_array();
+	            $tag_id = $array['id'];
+                
+                $result = $db -> query("insert into $map_table (data_id, tag_id) values ('$id', $tag_id);");
+            }
+        }
+}
+
+function add_item($url, $info, $tags) {
+	global $db, $data_table, $map_table, $tag_table;
+	
+	#Get ID
+    $id = md5($url);
+    
+    # Add Data
+    $result = $db -> query("insert into $data_table (id, url, info) values ('$id', '$url', '$info');");
+    $added = $result;
+    
+    # Add Tag
+    if($added && $tags) {
+        set_item_tag($id, $tags);
+    }
+    
+    return $added;
+}
+
+function update_item($id, $url, $info, $tags) {
+	global $db, $data_table, $map_table, $tag_table;
+	
+	# Update Data From Database
+    $result = $db -> query("UPDATE $data_table SET info='$info' WHERE id='$id';");
+    $updated = $result;
+    
+    if($updated && $tags) {
+        $result = $db -> query("DELETE FROM $map_table WHERE data_id='$id';");
+        set_item_tag($id, $tags);
+    }
+    
+    return $updated;
+}
+
+function delete_item($id) {
+	global $db, $data_table, $map_table, $tag_table;
+	
+	$result = $db -> query("DELETE FROM $data_table WHERE id='$id';");
+    $deleted = $result;
+    if($deleted) {
+        $result = $db -> query("DELETE FROM $map_table WHERE data_id='$id';");
+    }
+    
+    return $deleted;
+}
+
+function show_models($id) {
+    global $models, $db, $data_table, $map_table, $tag_table;
+    if($models) {
+	    foreach($models as $model) {
+	        include("./model/" . $model . ".php");
+        }
+    }
+}
