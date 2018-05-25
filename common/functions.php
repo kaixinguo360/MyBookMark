@@ -90,6 +90,14 @@ function run_sql($sql) {
     return $db -> query($sql);
 }
 
+function check_table($table, $sql) {
+    global $db;
+    $result = $db -> query("SHOW TABLES LIKE '$table';");
+    if(!$result -> num_rows){
+        $db -> query($sql);
+    }
+}
+
 function set_item_tag($id, $tags) {
 	global $db, $data_table, $map_table, $tag_table;
 	
@@ -155,7 +163,7 @@ function delete_item($id) {
 }
 
 function show_models($id) {
-    global $models, $db, $data_table, $map_table, $tag_table;
+    global $user, $models, $db, $data_table, $map_table, $tag_table;
     if($models) {
 	    foreach($models as $model) {
 	        include("./model/" . $model . ".php");
