@@ -34,7 +34,7 @@ $(window).resize(resize);
 	<div class='info' >
         <div style='margin:0 10px 0 10px;'>
             <div class='tags'>
-                <a href='?tag=_NULL_'><div class='tag'>无标签</div></a>
+                <a href='?tag=_NULL_'><div class='tag'>&nbsp;&nbsp;无标签&nbsp;&nbsp;</div></a>
                 <?php list_tags($tags); ?>
             </div>
 	    </div>

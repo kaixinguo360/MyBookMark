@@ -38,6 +38,7 @@ function resize() {
     });
 }
 $().ready(resize);
+$(window).load(resize);
 $(window).resize(resize);
 </script>
 
@@ -54,6 +55,7 @@ for ($i = 0; $i < $result -> num_rows; $i++) {
 	$url = $array['url'];
 	$info = $array['info'];
 	$time = $array['time'];
+	$info = nl2br($info);
 	item_image_linked($url, $info, $url);
 }
 show_models($id);

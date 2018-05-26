@@ -5,7 +5,14 @@
 .grid-item {
     width: 100%;
     margin-bottom: 8px;
+    border-radius:6px;
     box-shadow: 2px 4px 6px #888888;
+}
+.grid-item-img {
+    border-radius:6px 6px 0 0;
+}
+.grid-item-img-only {
+    border-radius:6px;
 }
 .grid-item-info {
     margin:8px 0 0 0;
@@ -26,5 +33,6 @@
 	min-width:50px;
 	padding:4px;
 	margin-bottom:4px;
+    border-radius:16px;
 	box-shadow: 1px 2px 3px #888888;
 }

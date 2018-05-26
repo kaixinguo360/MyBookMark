@@ -10,6 +10,7 @@ if($url) {
     # Add to Database
 	$tags = explode(",", $tags);
     $added = add_item($url, $info, $tags);
+    $id = md5($url);
 } else {
     # Get All Tags
     $result = $db -> query("SELECT name FROM $tag_table;");

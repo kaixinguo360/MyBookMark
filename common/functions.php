@@ -40,13 +40,15 @@ if($link_url) {
 }
 
 function item_image($url, $info, $link_url=NULL) {
-item("<img width=100% src='$url' alt='$info' />"
+$img_class = $info ? "grid-item-img" : "grid-item-img-only";
+item("<img class='$img_class' width=100% src='$url' />"
     .($info ? "<div class='grid-item-info'><p>$info</p></div>" : "")
 , $link_url);
 }
 
 function item_image_linked($url, $info, $link_url) {
-item("<a href='$link_url'><img width=100% src='$url' alt='$info' /></a>"
+$img_class = $info ? "grid-item-img" : "grid-item-img-only";
+item("<a href='$link_url'><img class='$img_class' width=100% src='$url' /></a>"
     .($info ? "<div class='grid-item-info'><p>$info</p></div>" : "")
 );
 }
@@ -57,7 +59,8 @@ if($tags) {
 	    echo"
 	    <a href='?tag=$tag'>
 	    <div class='tag'>
-		    $tag
+		    &nbsp;&nbsp;$tag&nbsp;&nbsp;
+		    <a href='?action=batchtag&tag=$tag'>+</a>&nbsp;&nbsp;
 	    </div>
 	    </a>
 	    ";
@@ -98,23 +101,29 @@ function check_table($table, $sql) {
     }
 }
 
-function set_item_tag($id, $tags) {
+function set_item_tag($id, $tag) {
+	global $db, $data_table, $map_table, $tag_table;
+	
+    if($tag) {
+        $result = $db -> query("SELECT id FROM $tag_table WHERE name='$tag';");
+        if(!$result -> num_rows) {
+            $result = $db -> query("INSERT INTO $tag_table (name) VALUES ('$tag');");
+            $result = $db -> query("SELECT id FROM $tag_table WHERE name='$tag';");
+        }
+        $array = $result -> fetch_array();
+	    $tag_id = $array['id'];
+        
+        $result = $db -> query("insert into $map_table (data_id, tag_id) values ('$id', $tag_id);");
+    }
+}
+
+function set_item_tags($id, $tags) {
 	global $db, $data_table, $map_table, $tag_table;
 	
 	foreach($tags as $tag) {
-            $tag = trim($tag);
-            if($tag) {
-                $result = $db -> query("SELECT id FROM $tag_table WHERE name='$tag';");
-                if(!$result -> num_rows) {
-                    $result = $db -> query("INSERT INTO $tag_table (name) VALUES ('$tag');");
-                    $result = $db -> query("SELECT id FROM $tag_table WHERE name='$tag';");
-                }
-                $array = $result -> fetch_array();
-	            $tag_id = $array['id'];
-                
-                $result = $db -> query("insert into $map_table (data_id, tag_id) values ('$id', $tag_id);");
-            }
-        }
+        $tag = trim($tag);
+        set_item_tag($id, $tag);
+    }
 }
 
 function add_item($url, $info, $tags) {
@@ -129,7 +138,7 @@ function add_item($url, $info, $tags) {
     
     # Add Tag
     if($added && $tags) {
-        set_item_tag($id, $tags);
+        set_item_tags($id, $tags);
     }
     
     return $added;
@@ -144,7 +153,7 @@ function update_item($id, $url, $info, $tags) {
     
     if($updated && $tags) {
         $result = $db -> query("DELETE FROM $map_table WHERE data_id='$id';");
-        set_item_tag($id, $tags);
+        set_item_tags($id, $tags);
     }
     
     return $updated;

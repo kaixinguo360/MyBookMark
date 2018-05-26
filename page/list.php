@@ -36,6 +36,7 @@ function resize() {
     });
 }
 $().ready(resize);
+$(window).load(resize);
 $(window).resize(resize);
 </script>
 
@@ -46,6 +47,7 @@ $(window).resize(resize);
 	<a class="btn btn-info" href="?action=add">&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;</a>
 	<?php if($tag && $tag != "无标签") {
 	    echo "<div style='margin-top:16px;'>";
+	    echo "&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href='?action=batchtag&tag=$tag'>&nbsp;&nbsp;&nbsp;批量设置&nbsp;&nbsp;&nbsp;</a>";
 	    echo "&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href='?action=edittag&tag=$tag'>&nbsp;&nbsp;&nbsp;编辑标签&nbsp;&nbsp;&nbsp;</a>";
 	    echo "&nbsp;&nbsp;&nbsp;<a class='btn btn-danger' href='?action=deletetag&tag=$tag'>&nbsp;&nbsp;&nbsp;删除标签&nbsp;&nbsp;&nbsp;</a>";
 	    echo "</div>";
@@ -60,6 +62,10 @@ $(window).resize(resize);
     	$id = $array['id'];
     	$url = $array['url'];
     	$info = $array['info'];
+        $info = strip_tags($info);
+        if(strlen($info) > 50) {
+            $info = mb_substr($info, 0, 50) . "...";
+        }
     	item_image($url, $info, "?action=img&id=$id");
     }
     ?>
