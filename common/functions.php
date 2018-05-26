@@ -60,7 +60,6 @@ if($tags) {
 	    <a href='?tag=$tag'>
 	    <div class='tag'>
 		    &nbsp;&nbsp;$tag&nbsp;&nbsp;
-		    <a href='?action=batchtag&tag=$tag'>+</a>&nbsp;&nbsp;
 	    </div>
 	    </a>
 	    ";

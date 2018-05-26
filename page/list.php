@@ -6,9 +6,10 @@ $tag = $_GET["tag"];
 # Get Data
 if($tag) {
     if($tag == "_NULL_") {
-        $tag = "无标签";
+        $tag_title = "无标签";
         $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table);");
     } else {
+        $tag_title = $tag;
         $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag';");
     }
 } else {
@@ -20,6 +21,18 @@ if(!$result)  {
 	exit('Error:<br>'.mysqli_error($db));
 }
 
+# Get Tags
+$result_tag = $db -> query("SELECT name FROM $tag_table;");
+
+# Check Data
+if(!$result_tag)  {
+	exit('Error:<br>'.mysqli_error($db));
+}
+
+# Decode Tags
+for ($i = 0; $i < $result_tag -> num_rows; $i++) {
+	$tags[$i] = $result_tag -> fetch_array()['name'];
+}
 ?>
 
 <script>
@@ -34,6 +47,11 @@ function resize() {
         itemSelector: '.grid-item',
         fitWidth: true,
     });
+    $('.tags').masonry({
+        gutter: 8,
+        itemSelector: '.tag',
+        fitWidth: true,
+    });
 }
 $().ready(resize);
 $(window).load(resize);
@@ -41,20 +59,26 @@ $(window).resize(resize);
 </script>
 
 <div class="panel-heading">
-	<a href="?action=tags">图片<?php if($tag) echo " - $tag"; ?></a>
+	<a href="?">图片<?php if($tag) echo " - $tag_title"; ?></a>
 </div>
 <div class="panel-body text-center grid-div">
-	<a class="btn btn-info" href="?action=add">&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;</a>
-	<?php if($tag && $tag != "无标签") {
+    <div style='margin:0 10px 0 10px;'>
+        <div class='tags'>
+            <a href='?tag=_NULL_'><div class='tag'>&nbsp;&nbsp;无标签&nbsp;&nbsp;</div></a>
+            <?php list_tags($tags); ?>
+        </div>
+	</div>
+    <div style='margin-top:16px;'>
+	    <a class="btn btn-info" href="?action=add">&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;</a>&nbsp;&nbsp;&nbsp;
+	    <a class="btn btn-info" href="?action=organize&tag=<?php echo $tag; ?>">&nbsp;&nbsp;&nbsp;组织&nbsp;&nbsp;&nbsp;</a>
+	</div>
+	<?php if($tag && $tag != "_NULL_") {
 	    echo "<div style='margin-top:16px;'>";
-	    echo "&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href='?action=batchtag&tag=$tag'>&nbsp;&nbsp;&nbsp;批量设置&nbsp;&nbsp;&nbsp;</a>";
-	    echo "&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href='?action=edittag&tag=$tag'>&nbsp;&nbsp;&nbsp;编辑标签&nbsp;&nbsp;&nbsp;</a>";
-	    echo "&nbsp;&nbsp;&nbsp;<a class='btn btn-danger' href='?action=deletetag&tag=$tag'>&nbsp;&nbsp;&nbsp;删除标签&nbsp;&nbsp;&nbsp;</a>";
+	    echo "<a class='btn btn-info' href='?action=edittag&tag=$tag'>&nbsp;&nbsp;&nbsp;编辑标签&nbsp;&nbsp;&nbsp;</a>&nbsp;&nbsp;&nbsp;";
+	    echo "<a class='btn btn-danger' href='?action=deletetag&tag=$tag'>&nbsp;&nbsp;&nbsp;删除标签&nbsp;&nbsp;&nbsp;</a>";
 	    echo "</div>";
     } ?>
-	<br>
-	<br>
-	<div class="grid">
+	<div class="grid" style='margin-top:16px;'>
     <?php
     #Display Data
     for ($i = 0; $i < $result -> num_rows; $i++) {

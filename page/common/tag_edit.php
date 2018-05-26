@@ -1,5 +1,5 @@
 <script>
-function resize() {
+function resize_tag() {
     $('.tags').masonry({
         gutter: 8,
         itemSelector: '.tag',
@@ -10,19 +10,19 @@ function resize() {
 $(document).ready(function(){
 <?php
 if(!$fold_tmp) {
-    echo '$("#tag_box").show();$("#edit_tag").hide();resize();';
+    echo '$("#tag_box").show();$("#edit_tag").hide();resize_tag();';
 }
 ?>
     $("#edit_tag").click(function(){
-        $("#tag_box").slideToggle("normal", resize);
+        $("#tag_box").slideToggle("normal", resize_tag);
     });
     $("#add_tag").click(function(){
-        $("#add_div").slideToggle("normal", resize);
+        $("#add_div").slideToggle("normal", resize_tag);
     });
     $("#add_tag_btn").click(function() {
         var new_tags = $("#add_tag_text").val();
         $("#add_tag_text").val("");
-        $("#add_div").slideToggle("normal", resize);
+        $("#add_div").slideToggle("normal", resize_tag);
         
         var hasAdded = false;
         
