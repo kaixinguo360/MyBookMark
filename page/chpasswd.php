@@ -4,11 +4,10 @@ $old_pw = $_POST['old_pw'];
 $new_pw = $_POST['new_pw'];
 
 if($_POST['old_pw'] || $_POST['new_pw']) {
-    $result = $db -> query("SELECT password FROM $user_table WHERE id='". $_SESSION['user'] ."'");
-    $now_pw = $result -> fetch_array()["password"];
-
-    if($old_pw == $now_pw) {
-        $db -> query("UPDATE $user_table SET password='$new_pw' WHERE id='". $_SESSION['user'] ."'");
+    $result = $db -> query("SELECT id FROM $user_table WHERE password=PASSWORD('$old_pw') AND id='". $_SESSION['user'] ."'");
+    
+    if($result -> num_rows) {
+        $db -> query("UPDATE $user_table SET password=PASSWORD('$new_pw') WHERE id='". $_SESSION['user'] ."'");
         show_text("操作成功!<br><br><a class='btn btn-info' href='?'>返回</a>", "?");
         $_SESSION['user'] = '';
         exit();

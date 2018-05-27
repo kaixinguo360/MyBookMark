@@ -10,7 +10,7 @@ $verified = $_GET['verified'];
 if($todo == "create") {
     # Add to Database
 	if($user) {
-	    $result = $db -> query("insert into $user_table (id, password) values ('$user', '$passwd');");
+	    $result = $db -> query("insert into $user_table (id, password) values ('$user', PASSWORD('$passwd'));");
 	}
 } else if($todo == "remove") {
     # Remove From Database
@@ -116,7 +116,7 @@ if($todo == "create") {
             <input class='form-control inputbox' placeholder='User Name' type='text' name='user' />
         </div>
         <div class='form-group' id='inputdiv'>
-            <input class='form-control inputbox' placeholder='Password' type='text' name='passwd' />
+            <input class='form-control inputbox' placeholder='Password' type='text' name='passwd' autocomplete='off'/>
         </div>
     	<input class='btn btn-info' type='submit' value='&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;'>
     </form>

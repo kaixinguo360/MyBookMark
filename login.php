@@ -6,20 +6,17 @@ session_start();
 
 //读取ID
 $name=$_POST['name'];
+$password=$_POST['password'];
 
 if($name) {
-    $result = $db->query("SELECT id,password FROM $user_table WHERE id='$name';");
+    $result = $db->query("SELECT id FROM $user_table WHERE password=PASSWORD('$password') AND id='$name';");
     if($result -> num_rows) {
-        $array = $result -> fetch_array();
-	    $password = $array['password'];
 	    $userexist = TRUE;
     }
 }
 
-//if($userexist && isset($_POST['password']) && password_verify($_POST['password'],explode("\n",file_get_contents("./data/".$_POST['name']."/config.txt"))[0])){
-if($userexist && isset($_POST['password']) && $_POST['password'] == $password) {
+if($userexist) {
 	$_SESSION["user"] = $name;
-	//header('location:?');//禁止跳转,否则无法登录
 } else {
 	echo '
 	<html>
