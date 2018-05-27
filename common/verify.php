@@ -39,6 +39,10 @@ if(isset($_GET["api"])) {
     		//不存在则显示ID不存在
     	    jump_to("./login.php");
     	}
+    	if($user == ROOT_USER) {
+    		//为ROOT用户则跳转到管理页面
+    	    jump_to("./admin/");
+    	}
     }
 }
 

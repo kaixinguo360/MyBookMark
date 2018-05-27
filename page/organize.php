@@ -187,17 +187,20 @@ foreach($imgs as $img) {
 
 <?php
 
-foreach($imgs as $img) {
-	$id = $img['id'];
-	$url = $img['url'];
-	$info = $img['info'];
-    
-    $img_class = $info ? "grid-item-img" : "grid-item-img-only";
-    $content = "<img class='$img_class' width=100% src='$url' />"
-        .($info ? "<div class='grid-item-info'><p>$info</p></div>" : "");
-    echo "<div class='grid-item-out'><div class='grid-item' id='$id'>$content</div></div>";
+if($imgs) {
+    foreach($imgs as $img) {
+    	$id = $img['id'];
+    	$url = $img['url'];
+    	$info = $img['info'];
+        
+        $img_class = $info ? "grid-item-img" : "grid-item-img-only";
+        $content = "<img class='$img_class' width=100% src='$url' />"
+            .($info ? "<div class='grid-item-info'><p>$info</p></div>" : "");
+        echo "<div class='grid-item-out'><div class='grid-item' id='$id'>$content</div></div>";
+    }
+} else {
+    echo "<div style='color:#808080;'>没有图片</div>";
 }
-
 
 ?>
     </div>

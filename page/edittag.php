@@ -7,7 +7,7 @@ $new_name = $_GET['new_name'];
 if($new_name && $tag) {
     $result = $db -> query("UPDATE $tag_table SET name='$new_name' WHERE name='$tag';");
     $text = "更新" . $result ? "成功" : "失败";
-    jump_with_text($text, "?action=tags");
+    jump_with_text($text, "?tag=$new_name");
 }
 
 echo "

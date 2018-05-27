@@ -6,6 +6,7 @@ define("DB_USER", "test");
 define("DB_PASS", "1234567");
 define("DB_NAME", "test");
 define("TB_PREFIX", "test_");
+define("ROOT_USER", "root");
 
 # Set Models
 $models = array("ext_url");
@@ -24,7 +25,7 @@ $api_table = TB_PREFIX . "api";
 $result = $db -> query("SHOW TABLES LIKE '$user_table'");
 if(!$result -> num_rows){
     $db -> query("CREATE TABLE $user_table (id CHAR(16) PRIMARY KEY, password TEXT, time datetime NOT NULL DEFAULT CURRENT_TIMESTAMP);");
-    $db -> query("insert into $user_table (id, password) values ('admin', '1234567');");
+    $db -> query("insert into $user_table (id, password) values ('". ROOT_USER ."', '1234567');");
 }
 $result = $db -> query("SHOW TABLES LIKE '$api_table'");
 if(!$result -> num_rows){

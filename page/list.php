@@ -65,12 +65,16 @@ $(window).resize(resize);
     <div style='margin:0 10px 0 10px;'>
         <div class='tags'>
             <a href='?tag=_NULL_'><div class='tag'>&nbsp;&nbsp;无标签&nbsp;&nbsp;</div></a>
-            <?php list_tags($tags); ?>
+            <?php if($tags) {list_tags($tags);} ?>
         </div>
 	</div>
     <div style='margin-top:16px;'>
-	    <a class="btn btn-info" href="?action=add">&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;</a>&nbsp;&nbsp;&nbsp;
-	    <a class="btn btn-info" href="?action=organize&tag=<?php echo $tag; ?>">&nbsp;&nbsp;&nbsp;组织&nbsp;&nbsp;&nbsp;</a>
+	    <a class="btn btn-info" href="?action=add">&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;</a>
+	    <?php
+	    if($result -> num_rows) {
+	        echo "&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href='?action=organize&tag=$tag'>&nbsp;&nbsp;&nbsp;组织&nbsp;&nbsp;&nbsp;</a>";
+	    }
+	    ?>
 	</div>
 	<?php if($tag && $tag != "_NULL_") {
 	    echo "<div style='margin-top:16px;'>";
@@ -78,20 +82,26 @@ $(window).resize(resize);
 	    echo "<a class='btn btn-danger' href='?action=deletetag&tag=$tag'>&nbsp;&nbsp;&nbsp;删除标签&nbsp;&nbsp;&nbsp;</a>";
 	    echo "</div>";
     } ?>
-	<div class="grid" style='margin-top:16px;'>
+	
     <?php
     #Display Data
-    for ($i = 0; $i < $result -> num_rows; $i++) {
-    	$array = $result -> fetch_array();
-    	$id = $array['id'];
-    	$url = $array['url'];
-    	$info = $array['info'];
-        $info = strip_tags($info);
-        if(strlen($info) > 50) {
-            $info = mb_substr($info, 0, 50) . "...";
+    if($result -> num_rows) {
+        echo "<div class='grid' style='margin-top:16px;'>";
+        for ($i = 0; $i < $result -> num_rows; $i++) {
+        	$array = $result -> fetch_array();
+        	$id = $array['id'];
+        	$url = $array['url'];
+        	$info = $array['info'];
+            $info = strip_tags($info);
+            if(strlen($info) > 50) {
+                $info = mb_substr($info, 0, 50) . "...";
+            }
+        	item_image($url, $info, "?action=img&id=$id");
         }
-    	item_image($url, $info, "?action=img&id=$id");
+        echo "</div>";
+    } else {
+        echo "<div style='color:#808080;margin-top:30px;margin-bottom:20px;'>没有图片</div>";
     }
+    
     ?>
-	</div>
 </div>
