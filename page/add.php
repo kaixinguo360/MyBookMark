@@ -4,18 +4,24 @@
 $info = $_GET['info'];
 $url = $_GET['url'];
 $tags = $_GET['tags'];
+$tags_select = explode(",", $tags);
 
 # Check Data
 if($url) {
     # Add to Database
-	$tags = explode(",", $tags);
-    $added = add_item($url, $info, $tags);
+    $added = add_item($url, $info, $tags_select);
     $id = md5($url);
 } else {
     # Get All Tags
+    unset($tags);
     $result = $db -> query("SELECT name FROM $tag_table;");
-    for ($i = 0; $i < $result -> num_rows; $i++) {
+    for($i = 0; $i < $result -> num_rows; $i++) {
     	$tags[$result -> fetch_array()['name']] = "";
+    }
+    foreach($tags_select as $tag) {
+        if($tag) {
+            $tags[trim($tag)] = TRUE;
+        }
     }
 }
 
@@ -32,7 +38,7 @@ if($url) {
             #Display Data
             echo '
             <div style="margin-bottom:10px;">
-                <a class="btn btn-info" href="?action=add">&nbsp;&nbsp;&nbsp;继续&nbsp;&nbsp;&nbsp;</a>&nbsp;&nbsp;&nbsp;
+                <a class="btn btn-info" href="?action=add&tags='. $tags .'">&nbsp;&nbsp;&nbsp;继续&nbsp;&nbsp;&nbsp;</a>&nbsp;&nbsp;&nbsp;
                 <a class="btn btn-info" href="./index.php">&nbsp;&nbsp;&nbsp;返回&nbsp;&nbsp;&nbsp;</a>
             </div>
             ';

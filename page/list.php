@@ -7,9 +7,11 @@ $tag = $_GET["tag"];
 if($tag) {
     if($tag == "_NULL_") {
         $tag_title = "无标签";
+        $tag_to_add = "";
         $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table);");
     } else {
         $tag_title = $tag;
+        $tag_to_add = $tag;
         $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag';");
     }
 } else {
@@ -69,8 +71,8 @@ $(window).resize(resize);
         </div>
 	</div>
     <div style='margin-top:16px;'>
-	    <a class="btn btn-info" href="?action=add">&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;</a>
 	    <?php
+	    echo "<a class='btn btn-info' href='?action=add&tags=$tag_to_add'>&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;</a>";
 	    if($result -> num_rows) {
 	        echo "&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href='?action=organize&tag=$tag'>&nbsp;&nbsp;&nbsp;组织&nbsp;&nbsp;&nbsp;</a>";
 	    }

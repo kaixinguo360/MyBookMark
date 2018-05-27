@@ -3,8 +3,9 @@
 $imgs = $_POST["imgs"];
 $tags = $_POST["tags"];
 $tag = $_GET["tag"];
+$todo = $_POST["todo"];
 
-if(isset($_POST["imgs"])) {
+if($todo == "settag") {
     
     $imgs = explode(",", $imgs);
     for($i = 0; $i < count($imgs); $i++) {
@@ -25,7 +26,17 @@ if(isset($_POST["imgs"])) {
     }
     
     jump_with_text("操作完成!", "?");
-} else {
+} else if($todo == "delete") {
+    $imgs = explode(",", $imgs);
+    for($i = 0; $i < count($imgs); $i++) {
+        $imgs[$i] = trim($imgs[$i]);
+    }
+    foreach($imgs as $img) {
+        run_sql("DELETE FROM $data_table WHERE id='$img'");
+        run_sql("DELETE FROM $map_table WHERE data_id='$img'");
+    }
+    jump_with_text("操作完成!", "?");
+} {
     
     if($tag) {
         if($tag == "_NULL_") {
@@ -164,6 +175,12 @@ foreach($imgs as $img) {
         }
         update_items();
     });
+    $("#settag").click(function() {
+        $("#todo").val("settag");
+    });
+    $("#delete").click(function() {
+        $("#todo").val("delete");
+    });
 });
 </script>
 
@@ -173,7 +190,8 @@ foreach($imgs as $img) {
 
 <div class="panel-body text-center grid-div">
     <form method='post' action='?action=organize&tag=<?php echo $tag; ?>'>
-    <input name='imgs' id='imgs' value='' hidden=true/>
+    <input name='todo' id='todo' value='' hidden=true/>
+	<input name='imgs' id='imgs' value='' hidden=true/>
 	<div class='form-group' style="margin-top:-10px;width:100%">
         <?php
         list_tag_edit($tags);
@@ -181,7 +199,8 @@ foreach($imgs as $img) {
     </div>
     <div class='form-group' style="width:100%">
         <div class='btn btn-info' id='reset'>&nbsp;&nbsp;&nbsp;重置&nbsp;&nbsp;&nbsp;</div>&nbsp;&nbsp;&nbsp;
-	    <input class='btn btn-info' type='submit' value='&nbsp;&nbsp;&nbsp;确定&nbsp;&nbsp;&nbsp;'>
+	    <input class='btn btn-info' id='settag' type='submit' value='&nbsp;&nbsp;&nbsp;确定&nbsp;&nbsp;&nbsp;'>&nbsp;&nbsp;&nbsp;
+		<input class='btn btn-danger' id='delete' type='submit' value='&nbsp;&nbsp;&nbsp;删除&nbsp;&nbsp;&nbsp;'>
     </div>
 	<div class="grid">
 
