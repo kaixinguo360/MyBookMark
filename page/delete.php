@@ -35,10 +35,9 @@ if($id && $verified == "true") {
         <h2>您确认要删除此图片吗?</h2>
         <div class='grid-item'>
                 <img width=100% src='$url' alt='$info' />
-            
-                <div class='grid-item-info'>
-                <p>$info</p>
-                </div>
+                ". 
+                ($info ? "<div class='grid-item-info'><p>$info</p></div>" : "")
+                 . "
         </div>
 		<input class='btn btn-danger' type='submit' value='&nbsp;&nbsp;&nbsp;确认&nbsp;&nbsp;&nbsp;'>
 	</form>

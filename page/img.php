@@ -58,9 +58,14 @@ for ($i = 0; $i < $result -> num_rows; $i++) {
 	$info = nl2br($info);
 	item_image_linked($url, $info, $url);
 }
-show_models($id);
+if($models) {
+    foreach($models as $model) {
+	    include("./model/" . $model . ".php");
+    }
+}
 ?>
         <div class='grid-item info'>
+            <?php if($mod) {echo "<div class='info' >".$mod."</div>";} ?>
             <div class='info' >
                 <b>原始地址: </b>
                 <pre style='margin:0 30px 0 30px;'><?php echo $url; ?></pre>

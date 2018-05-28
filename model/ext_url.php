@@ -17,13 +17,7 @@ if($_GET['action'] == "img") {
 </div>
     ";
 } else {
-	echo "
-<div class='grid-item'>
-	<div style='margin:10px'>
-		<a href='?mod=ext_url&id=$id'>添加链接</a>
-	</div>
-</div>
-    ";
+	$mod .= "<div><a href='?mod=ext_url&id=$id'>添加链接</a></div>";
 }
     return;
 }

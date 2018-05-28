@@ -169,12 +169,3 @@ function delete_item($id) {
     
     return $deleted;
 }
-
-function show_models($id) {
-    global $user, $models, $db, $data_table, $map_table, $tag_table;
-    if($models) {
-	    foreach($models as $model) {
-	        include("./model/" . $model . ".php");
-        }
-    }
-}

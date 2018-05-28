@@ -27,6 +27,10 @@ if($url) {
 
 ?>
 
+<script>
+alert(window.clipboardData.getData("text"));
+</script>
+
 <div class="panel-heading">
 	<a href="?">添加图片</a>
 </div>
@@ -35,7 +39,14 @@ if($url) {
         if($url) {
             $status = $added ? "成功" : "失败<br>".mysqli_error($db);
             
-            #Display Data
+            # Script
+            echo "
+            <script>
+                window.setTimeout(\"location='?action=add&tags=$tags'\", 3000);
+            </script>
+            ";
+            
+            # Display Data
             echo '
             <div style="margin-bottom:10px;">
                 <a class="btn btn-info" href="?action=add&tags='. $tags .'">&nbsp;&nbsp;&nbsp;继续&nbsp;&nbsp;&nbsp;</a>&nbsp;&nbsp;&nbsp;
@@ -65,7 +76,7 @@ if($url) {
     <form method='get'>
         <input name='action' value='add' hidden=true/>
         <div class='form-group' id='inputdiv'>
-            <input class='form-control inputbox' id='url' placeholder='URL' type='text' name='url' />
+            <input class='form-control inputbox' id='url' placeholder='URL' type='text' name='url' autocomplete='off' />
         </div>
         <div class='form-group' >";
         list_tag_edit($tags);
