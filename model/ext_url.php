@@ -11,7 +11,7 @@ if($_GET['action'] == "img") {
 	echo "
 <div class='grid-item'>
 	<div style='margin:10px'>
-		<h4><a href='$ext_url'>附加链接</a></h4>
+		<h4><a href='$ext_url' target='_blank'>附加链接</a></h4>
 		<a href='?mod=ext_url&id=$id'>编辑</a>
 	</div>
 </div>

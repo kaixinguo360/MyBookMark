@@ -18,7 +18,7 @@ if($todo == "settag") {
     
     if($imgs) {
         foreach($imgs as $img) {
-            run_sql("DELETE FROM $map_table WHERE data_id='$img'");
+            //run_sql("DELETE FROM $map_table WHERE data_id='$img'");
             foreach($tags as $tag) {
                 set_item_tag($img, $tag);
             }
@@ -36,14 +36,39 @@ if($todo == "settag") {
         run_sql("DELETE FROM $map_table WHERE data_id='$img'");
     }
     jump_with_text("操作完成!", "?");
-} {
-    
-    if($tag) {
-        if($tag == "_NULL_") {
-            $tag = "无标签";
-            $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table);");
+} else {
+    $tags = $_GET["tags"];
+    if($tags) {
+        $tags = explode(",", $tags);
+        $count = count($tags);
+        $count_sub = 0;
+        
+        for($i = 0; $i < $count; $i++) {
+            $tags[$i] = trim($tags[$i]);
+            if(!$tags[$i]) {
+                unset($tags[$i]);
+                $count_sub++;
+            }
+        }
+        $count -= $count_sub;
+        
+        if($count == 1) {
+            $tag = $tags[0];
+            if($tag == "_NULL_") {
+                $tag_title = "无标签";
+                $tag_to_add = "";
+                $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table);");
+            } else {
+                $allow_edit = TRUE;
+                $tag_title = $tag;
+                $tag_to_add = $tag;
+                $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag';");
+            }
         } else {
-            $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag';");
+            $tag_title = implode(",", $tags);
+            $tag_to_add = $tag_title;
+            $sql = "'" . implode("','", $tags) . "'";
+            $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql) GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count;");
         }
     } else {
     	$result=$db->query("SELECT id,info,url FROM $data_table;");
@@ -66,6 +91,11 @@ if($todo == "settag") {
     $result = $db -> query("SELECT name FROM $tag_table;");
     for ($i = 0; $i < $result -> num_rows; $i++) {
     	$tags[$result -> fetch_array()['name']] = "";
+    }
+    
+    $result = $db -> query("SELECT name FROM $tag_table;");
+    for ($i = 0; $i < $result -> num_rows; $i++) {
+    	$tags_all[$result -> fetch_array()['name']] = "";
     }
 }
 
@@ -185,16 +215,16 @@ foreach($imgs as $img) {
 </script>
 
 <div class="panel-heading">
-	<a href="?">组织<?php if($tag) echo " - $tag"; ?></a>
+	<a href="?tags=<?php echo $_GET["tags"]; ?>">组织<?php if($tag_title) echo " - $tag_title"; ?></a>
 </div>
 
 <div class="panel-body text-center grid-div">
-    <form method='post' action='?action=organize&tag=<?php echo $tag; ?>'>
+    <form method='post' action='?action=organize&tags=<?php echo $tag_to_add; ?>'>
     <input name='todo' id='todo' value='' hidden=true/>
 	<input name='imgs' id='imgs' value='' hidden=true/>
 	<div class='form-group' style="margin-top:-10px;width:100%">
         <?php
-        list_tag_edit($tags);
+        list_tag_edit($tags_all);
         ?>
     </div>
     <div class='form-group' style="width:100%">

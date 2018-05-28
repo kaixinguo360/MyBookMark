@@ -57,7 +57,7 @@ function list_tags($tags) {
 if($tags) {
     foreach($tags as $tag) {
 	    echo"
-	    <a href='?tag=$tag'>
+	    <a href='?tags=$tag'>
 	    <div class='tag'>
 		    &nbsp;&nbsp;$tag&nbsp;&nbsp;
 	    </div>

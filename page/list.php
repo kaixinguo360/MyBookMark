@@ -1,18 +1,45 @@
 <?php
 
+$sql = "SELECT $data_table.id,info,url FROM ($data_table LEFT JOIN $map_table ON $data_table.id=$map_table.data_id) LEFT JOIN $tag_table ON $map_table.tag_id=$tag_table.id ";
+
 # Get Tag
-$tag = $_GET["tag"];
+$tags = $_GET["tags"];
 
 # Get Data
-if($tag) {
-    if($tag == "_NULL_") {
-        $tag_title = "无标签";
-        $tag_to_add = "";
-        $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table);");
+if($tags) {
+    $tags = explode(",", $tags);
+    $count = count($tags);
+    $count_sub = 0;
+    
+    for($i = 0; $i < $count; $i++) {
+        $tags[$i] = trim($tags[$i]);
+        if(!$tags[$i]) {
+            unset($tags[$i]);
+            $count_sub++;
+        }
+    }
+    $count -= $count_sub;
+    
+    if($count == 1) {
+        $tag = $tags[0];
+        if($tag == "_NULL_") {
+            $tag_title = "无标签";
+            $tag_to_add = "";
+            $tag_to_organize = $tag;
+            $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table);");
+        } else {
+            $allow_edit = TRUE;
+            $tag_title = $tag;
+            $tag_to_add = $tag;
+            $tag_to_organize = $tag;
+            $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag';");
+        }
     } else {
-        $tag_title = $tag;
-        $tag_to_add = $tag;
-        $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag';");
+        $tag_title = implode(",", $tags);
+        $tag_to_add = $tag_title;
+        $tag_to_organize = $tag_title;
+        $sql = "'" . implode("','", $tags) . "'";
+        $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql) GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count;");
     }
 } else {
 	$result=$db->query("SELECT id,info,url FROM $data_table;");
@@ -33,7 +60,7 @@ if(!$result_tag)  {
 
 # Decode Tags
 for ($i = 0; $i < $result_tag -> num_rows; $i++) {
-	$tags[$i] = $result_tag -> fetch_array()['name'];
+	$tags_all[$i] = $result_tag -> fetch_array()['name'];
 }
 ?>
 
@@ -61,27 +88,45 @@ $(window).resize(resize);
 </script>
 
 <div class="panel-heading">
-	<a href="?">图片<?php if($tag) echo " - $tag_title"; ?></a>
+	<a href="?">图片<?php if($tag_title) echo " - $tag_title"; ?></a>
 </div>
 <div class="panel-body text-center grid-div">
     <div style='margin:0 10px 0 10px;'>
         <div class='tags'>
-            <a href='?tag=_NULL_'><div class='tag'>&nbsp;&nbsp;无标签&nbsp;&nbsp;</div></a>
-            <?php if($tags) {list_tags($tags);} ?>
+            <a href='?tags=_NULL_'><div class='tag'>&nbsp;&nbsp;无标签&nbsp;&nbsp;</div></a>
+            <?php
+                if($tags_all) {
+                    foreach($tags_all as $tag) {
+                	    echo"
+                	    <a href='?tags=$tag'>
+                	    <div class='tag'>
+                		    &nbsp;&nbsp;$tag". ($tag_to_add ? "&nbsp;<a href='?tags=$tag_to_add,$tag'>+</a>" : "") ."&nbsp;&nbsp;
+                	    </div>
+                	    </a>
+                	    ";
+                    }
+                } else {
+                	echo "
+                        <div class='tag'>
+                		    <font color='grey'>无</font>
+                	    </div>
+                    ";
+                }
+            ?>
         </div>
 	</div>
     <div style='margin-top:16px;'>
 	    <?php
 	    echo "<a class='btn btn-info' href='?action=add&tags=$tag_to_add'>&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;</a>";
 	    if($result -> num_rows) {
-	        echo "&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href='?action=organize&tag=$tag'>&nbsp;&nbsp;&nbsp;组织&nbsp;&nbsp;&nbsp;</a>";
+	        echo "&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href='?action=organize&tags=$tag_to_organize'>&nbsp;&nbsp;&nbsp;组织&nbsp;&nbsp;&nbsp;</a>";
 	    }
 	    ?>
 	</div>
-	<?php if($tag && $tag != "_NULL_") {
+	<?php if($allow_edit) {
 	    echo "<div style='margin-top:16px;'>";
-	    echo "<a class='btn btn-info' href='?action=edittag&tag=$tag'>&nbsp;&nbsp;&nbsp;编辑标签&nbsp;&nbsp;&nbsp;</a>&nbsp;&nbsp;&nbsp;";
-	    echo "<a class='btn btn-danger' href='?action=deletetag&tag=$tag'>&nbsp;&nbsp;&nbsp;删除标签&nbsp;&nbsp;&nbsp;</a>";
+	    echo "<a class='btn btn-info' href='?action=edittag&tag=$tag_to_add'>&nbsp;&nbsp;&nbsp;编辑标签&nbsp;&nbsp;&nbsp;</a>&nbsp;&nbsp;&nbsp;";
+	    echo "<a class='btn btn-danger' href='?action=deletetag&tag=$tag_to_add'>&nbsp;&nbsp;&nbsp;删除标签&nbsp;&nbsp;&nbsp;</a>";
 	    echo "</div>";
     } ?>
 	
