@@ -16,7 +16,14 @@ if($todo == "create") {
     # Remove From Database
     if(isset($_GET['verified'])) {
         if($verified == $user) {
+            
+            $data_table = TB_PREFIX . "data_" . $user;
+            $tag_table = TB_PREFIX . "tag_" . $user;
+            $map_table = TB_PREFIX . "map_" . $user;
+            $user_api_table = TB_PREFIX . "api_" . $user;
+            
             $result = $db -> query("DELETE FROM $user_table WHERE id='$user';");
+            $result = $db -> query("DROP TABLE $data_table, $tag_table, $map_table, $user_api_table;");
         } else {
             $error = "输入用户名不一致, 删除操作终止!";
         }
