@@ -125,7 +125,7 @@ function set_item_tags($id, $tags) {
     }
 }
 
-function add_item($url, $info, $tags) {
+function add_item($url, $info, $tags = NULL) {
 	global $db, $data_table, $map_table, $tag_table;
 	
 	#Get ID
