@@ -57,21 +57,21 @@ if($todo == "settag") {
             if($tag == "_NULL_") {
                 $tag_title = "无标签";
                 $tag_to_add = "";
-                $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table);");
+                $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table) ORDER BY $data_table.time DESC;");
             } else {
                 $allow_edit = TRUE;
                 $tag_title = $tag;
                 $tag_to_add = $tag;
-                $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag';");
+                $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag' ORDER BY $data_table.time DESC;");
             }
         } else {
             $tag_title = implode(",", $tags);
             $tag_to_add = $tag_title;
             $sql = "'" . implode("','", $tags) . "'";
-            $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql) GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count;");
+            $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql) GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count ORDER BY $data_table.time DESC;");
         }
     } else {
-    	$result=$db->query("SELECT id,info,url FROM $data_table;");
+    	$result=$db->query("SELECT id,info,url FROM $data_table ORDER BY $data_table.time DESC;");
     }
     
     for ($i = 0; $i < $result -> num_rows; $i++) {
@@ -86,11 +86,6 @@ if($todo == "settag") {
     	$img['info'] = $info_tmp;
         
         $imgs[$i] = $img;
-    }
-    
-    $result = $db -> query("SELECT name FROM $tag_table;");
-    for ($i = 0; $i < $result -> num_rows; $i++) {
-    	$tags[$result -> fetch_array()['name']] = "";
     }
     
     $result = $db -> query("SELECT name FROM $tag_table;");

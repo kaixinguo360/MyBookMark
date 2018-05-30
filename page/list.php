@@ -1,6 +1,6 @@
 <?php
 
-$sql = "SELECT $data_table.id,info,url FROM ($data_table LEFT JOIN $map_table ON $data_table.id=$map_table.data_id) LEFT JOIN $tag_table ON $map_table.tag_id=$tag_table.id ";
+//$sql = "SELECT $data_table.id,info,url FROM ($data_table LEFT JOIN $map_table ON $data_table.id=$map_table.data_id) LEFT JOIN $tag_table ON $map_table.tag_id=$tag_table.id ";
 
 # Get Tag
 $tags = $_GET["tags"];
@@ -26,23 +26,23 @@ if($tags) {
             $tag_title = "无标签";
             $tag_to_add = "";
             $tag_to_organize = $tag;
-            $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table);");
+            $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table) ORDER BY $data_table.time DESC;");
         } else {
             $allow_edit = TRUE;
             $tag_title = $tag;
             $tag_to_add = $tag;
             $tag_to_organize = $tag;
-            $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag';");
+            $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag' ORDER BY $data_table.time DESC;");
         }
     } else {
         $tag_title = implode(",", $tags);
         $tag_to_add = $tag_title;
         $tag_to_organize = $tag_title;
         $sql = "'" . implode("','", $tags) . "'";
-        $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql) GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count;");
+        $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql) GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count ORDER BY $data_table.time DESC;");
     }
 } else {
-	$result=$db->query("SELECT id,info,url FROM $data_table;");
+	$result=$db->query("SELECT id,info,url FROM $data_table ORDER BY $data_table.time DESC;");
 }
 
 # Check Data
