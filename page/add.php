@@ -4,10 +4,11 @@
 $info = $_GET['info'];
 $url = $_GET['url'];
 $tags = $_GET['tags'];
+$need_edit = $_GET['need_edit'];
 $tags_select = explode(",", $tags);
 
 # Check Data
-if($url) {
+if($url && !$need_edit) {
     # Add to Database
     $added = add_item($url, $info, $tags_select);
     $id = md5($url);
@@ -36,7 +37,7 @@ alert(window.clipboardData.getData("text"));
 </div>
 <div class="panel-body" style="max-width:400px; margin: 0 auto;">
     <?php 
-        if($url) {
+        if($url && !$need_edit) {
             $status = $added ? "成功" : "失败<br>".mysqli_error($db);
             
             # Script
@@ -76,14 +77,14 @@ alert(window.clipboardData.getData("text"));
     <form method='get'>
         <input name='action' value='add' hidden=true/>
         <div class='form-group' id='inputdiv'>
-            <input class='form-control inputbox' id='url' placeholder='URL' type='text' name='url' autocomplete='off' />
+            <input class='form-control inputbox' id='url' placeholder='URL' type='text' name='url' value='$url' autocomplete='off' />
         </div>
         <div class='form-group' >";
         list_tag_edit($tags);
         echo "
         </div>
         <div class='form-group' id='inputdiv'>
-            <textarea class='form-control inputbox' id='info' placeholder='Info' type='text' name='info' style='height:40%;'></textarea>
+            <textarea class='form-control inputbox' id='info' placeholder='Info' type='text' name='info' style='height:40%;'>$info</textarea>
         </div>
 		<input class='btn btn-info' type='submit' value='&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;'>
 	</form>

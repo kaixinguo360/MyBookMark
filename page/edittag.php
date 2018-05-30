@@ -6,8 +6,7 @@ $new_name = $_GET['new_name'];
 
 if($new_name && $tag) {
     $result = $db -> query("UPDATE $tag_table SET name='$new_name' WHERE name='$tag';");
-    $text = "更新" . $result ? "成功" : "失败";
-    jump_with_text($text, "?tag=$new_name");
+    jump_with_text("更新" . ($result ? "成功" : "失败"), "?tags=$new_name");
 }
 
 echo "
@@ -21,7 +20,7 @@ echo "
         <input name='tag' value='$tag' hidden=true/>
         <pre>$tag</pre>
         <div class='form-group' id='inputdiv'>
-            <input class='form-control inputbox' placeholder='New Name' type='text' name='new_name' />
+            <input class='form-control inputbox' placeholder='New Name' type='text' name='new_name' autocomplete=false />
         </div>
 		<input class='btn btn-info' type='submit' value='&nbsp;&nbsp;&nbsp;更新&nbsp;&nbsp;&nbsp;'>
 	</form>

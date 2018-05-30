@@ -88,7 +88,13 @@ $(window).resize(resize);
 </script>
 
 <div class="panel-heading">
-	<a href="?">图片<?php if($tag_title) echo " - $tag_title"; ?></a>
+	<?php
+	if($tag_title) {
+		echo "<a href='javascript:history.go(-1);'>图片 - $tag_title</a>";
+	} else {
+		echo "图片";
+	}
+	?>
 </div>
 <div class="panel-body text-center grid-div">
     <div style='margin:0 10px 0 10px;'>

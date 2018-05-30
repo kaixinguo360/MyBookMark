@@ -38,7 +38,8 @@ if(isset($_GET['info'])) {
     <?php 
         if(isset($_GET['info'])) {
             $status = $updated ? "成功" : "失败<br>".mysqli_error($db);
-            jump_with_text("更新${status}！", "?action=img&id=$id");
+            show_text("更新${status}！");
+            echo "<script>history.go(-2);</script>";
         } else {
             echo "
     <br>

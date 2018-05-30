@@ -43,7 +43,7 @@ $(window).resize(resize);
 </script>
 
 <div class="panel-heading">
-	<a href="?">详情</a>
+	<a href="javascript:history.go(-1);">详情</a>
 </div>
 <div class="panel-body text-center grid-div">
 	<div class="grid">
