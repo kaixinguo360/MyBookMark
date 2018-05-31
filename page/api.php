@@ -43,18 +43,20 @@ for ($i = 0; $i < $result -> num_rows; $i++) {
 <div class="panel-body" style="max-width:400px; margin: 0 auto;">
     <div class="panel-body">
         <div>
-            <div><b>已有API</b></div>
-            <br>
-            <div>
 <?php
-foreach($apis as $api) {
-    echo "<div><p>";
-    echo $api['api_id'] . " - " . $api['password'] . " - " . implode(", ", $api['actions']);
-    echo "&nbsp;&nbsp;&nbsp;<a href='?action=api&todo=remove&t_api=". $api['api_id'] ."'>删除</a>";
-    echo "</p></div>";
+if($apis) {
+    echo "<div><b>已有API</b></div><br><div>";
+    foreach($apis as $api) {
+        echo "<div><p>";
+        echo $api['api_id'] . " - " . $api['password'] . " - " . implode(", ", $api['actions']);
+        echo "&nbsp;&nbsp;&nbsp;<a href='?action=api&todo=remove&t_api=". $api['api_id'] ."'>删除</a>";
+        echo "</p></div>";
+    }
+    echo "</div>";
+} else {
+    echo "<div><b>尚未添加API</b></div>";
 }
 ?>
-            </div>
         </div>
 
     </div>

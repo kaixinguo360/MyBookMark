@@ -43,7 +43,7 @@ $(window).resize(resize);
     foreach($html->find('img') as $element) {
         $src = $element->src;
         $alt = $element->alt;
-        item_image($src, $alt, "?action=add&url=$src&info=$alt&need_edit=true");
+        item_image($src, $alt, "?action=add&url=$src&info=$alt&source=$url&need_edit=true");
     }
     echo "</div></div>";
 } else {

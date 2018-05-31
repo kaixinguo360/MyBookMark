@@ -12,8 +12,9 @@ if($data) {
         foreach($data_data as $id => $item) {
             $url = $item['url'];
             $info = $item['info'];
+            $source = $item['source'];
             $time = $item['time'];
-            if(!$db -> query("INSERT INTO $data_table (id, url, info, time) VALUES ('$id', '$url', '$info', '$time');")) {
+            if(!$db -> query("INSERT INTO $data_table (id, url, info, source, time) VALUES ('$id', '$url', '$info', '$source', '$time');")) {
                 echo mysqli_error($db) . "<br>";
             } else {
                 echo "Import Data '$id'<br>";
@@ -46,12 +47,17 @@ if($data) {
     }
     exit("<br>操作完成<br><br><a class='btn btn-info' href='?'>返回</a><br><br>");
 } else {
-    $result = $db -> query("SELECT id, url, info, time FROM $data_table;");
+    $result = $db -> query("SELECT id, url, info, source, time FROM $data_table;");
     for ($i = 0; $i < $result -> num_rows; $i++) {
     	$array = $result -> fetch_array();
     	unset($item);
     	$item['url'] = $array['url'];
-    	$item['info'] = $array['info'];
+    	if($array['info']) {
+    	    $item['info'] = $array['info'];
+    	}
+    	if($array['source']) {
+    	    $item['source'] = $array['source'];
+    	}
     	$item['time'] = $array['time'];
     	$data_data[$array['id']] = $item;
     }

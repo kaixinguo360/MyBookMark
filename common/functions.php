@@ -125,14 +125,14 @@ function set_item_tags($id, $tags) {
     }
 }
 
-function add_item($url, $info, $tags = NULL) {
+function add_item($url, $info, $tags = NULL, $source = NULL) {
 	global $db, $data_table, $map_table, $tag_table;
 	
 	#Get ID
     $id = md5($url);
     
     # Add Data
-    $result = $db -> query("insert into $data_table (id, url, info) values ('$id', '$url', '$info');");
+    $result = $db -> query("insert into $data_table (id, url, info, source) values ('$id', '$url', '$info', '$source');");
     $added = $result;
     
     # Add Tag
@@ -143,11 +143,12 @@ function add_item($url, $info, $tags = NULL) {
     return $added;
 }
 
-function update_item($id, $url, $info, $tags) {
+function update_item($id, $url, $info, $tags, $source) {
 	global $db, $data_table, $map_table, $tag_table;
 	
 	# Update Data From Database
     $result = $db -> query("UPDATE $data_table SET info='$info' WHERE id='$id';");
+    $result = $db -> query("UPDATE $data_table SET source='$source' WHERE id='$id';");
     $updated = $result;
     
     if($updated && $tags) {

@@ -4,13 +4,14 @@
 $info = $_GET['info'];
 $url = $_GET['url'];
 $tags = $_GET['tags'];
+$source = $_GET['source'];
 $need_edit = $_GET['need_edit'];
 $tags_select = explode(",", $tags);
 
 # Check Data
 if($url && !$need_edit) {
     # Add to Database
-    $added = add_item($url, $info, $tags_select);
+    $added = add_item($url, $info, $tags_select, $source);
     $id = md5($url);
 } else {
     # Get All Tags
@@ -78,6 +79,9 @@ alert(window.clipboardData.getData("text"));
         <input name='action' value='add' hidden=true/>
         <div class='form-group' id='inputdiv'>
             <input class='form-control inputbox' id='url' placeholder='URL' type='text' name='url' value='$url' autocomplete='off' />
+        </div>
+        <div class='form-group' id='inputdiv'>
+            <input class='form-control inputbox' id='source' placeholder='Source' type='text' name='source' value='$source' autocomplete='off' />
         </div>
         <div class='form-group' >";
         list_tag_edit($tags);

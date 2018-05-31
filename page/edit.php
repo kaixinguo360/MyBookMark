@@ -4,12 +4,13 @@
 $tags = $_GET['tags'];
 $info = $_GET['info'];
 $url = $_GET['url'];
+$source = $_GET['source'];
 $id = $_GET['id'];
 
 # Check Data
 if(isset($_GET['info'])) {
 	$tags = explode(",", $tags);
-    $updated = update_item($id, $url, $info, $tags);
+    $updated = update_item($id, $url, $info, $tags, $source);
 } else {
     # Get All Tags
     $result = $db -> query("SELECT name FROM $tag_table;");
@@ -18,10 +19,11 @@ if(isset($_GET['info'])) {
     }
 
     # Get Tags Of Img
-    $result = $db -> query("SELECT info,url FROM $data_table WHERE id='$id';");
+    $result = $db -> query("SELECT info,url,source FROM $data_table WHERE id='$id';");
 	$array = $result -> fetch_array();
 	$url = $array['url'];
 	$info = $array['info'];
+	$source = $array['source'];
 	
 	$result = $db -> query("SELECT $tag_table.name FROM $map_table,$tag_table WHERE $map_table.tag_id=$tag_table.id AND $map_table.data_id='$id';");
 	for ($i = 0; $i < $result -> num_rows; $i++) {
@@ -48,6 +50,9 @@ if(isset($_GET['info'])) {
         <input name='id' value='$id' hidden=true/>
         <input name='url' value='$url' hidden=true/>
         <pre>$url</pre>
+        <div class='form-group' id='inputdiv'>
+            <input class='form-control inputbox' id='source' placeholder='Source' type='text' name='source' value='$source' autocomplete='off' />
+        </div>
         <div class='form-group' >";
         list_tag_edit($tags);
         echo "

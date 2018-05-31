@@ -9,7 +9,7 @@ define("TB_PREFIX", "test_");
 define("ROOT_USER", "root");
 
 # Set Models
-$models = array("ext_url", "img_search");
+$models = array("img_search");
 
 # Connect To Database
 $db = new mysqli(DB_HOST,DB_USER,DB_PASS,DB_NAME);
