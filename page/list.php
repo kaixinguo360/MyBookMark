@@ -45,6 +45,10 @@ if($tags  || $except) {
                 $tag_title = $tag;
                 $tag_to_add = $tag;
                 $tag_to_organize = $tag;
+                $result_tag_info = $db->query("SELECT info FROM $tag_table WHERE name='$tag';");
+                if($result_tag_info) {
+                    $result_tag_info = $result_tag_info -> fetch_array()['info'];
+                }
                 if($except) {
                     $except = explode(",", $except);
                     $count_except = count($except);
@@ -58,8 +62,9 @@ if($tags  || $except) {
                     $tag_title .= ",-" . implode(",-", $except);
                     $except_sql = " AND $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", $except) ."'))";
                 }
-                $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag'$except_sql ORDER BY $data_table.time DESC;");
+                $result=$db->query("SELECT $data_table.id,$data_table.info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag'$except_sql ORDER BY $data_table.time DESC;");
             }
+            break;
         }
     } else {
         $tag_title = implode(",", $tags);
@@ -79,7 +84,7 @@ if($tags  || $except) {
             $tag_title .= ",-" . implode(",-", $except);
             $except_sql = " AND $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", $except) ."'))";
         }
-        $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql)$except_sql GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count ORDER BY $data_table.time DESC;");
+        $result=$db->query("SELECT $data_table.id,$data_table.info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql)$except_sql GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count ORDER BY $data_table.time DESC;");
     }
 } else {
 	$result=$db->query("SELECT id,info,url FROM $data_table ORDER BY $data_table.time DESC;");
@@ -135,7 +140,7 @@ $(window).resize(resize);
 <div class="panel-heading">
 	<?php
 	if($tag_title) {
-		echo "<a href='javascript:history.go(-1);'>图片 - $tag_title</a>";
+		echo "<a href='?'>图片 - $tag_title</a>";
 	} else {
 		echo "图片";
 	}
@@ -147,23 +152,25 @@ $(window).resize(resize);
         <div class='tags' hidden=true style='margin:10px auto;'>
             <a href='?tags=_NULL_'><div class='tag'>&nbsp;&nbsp;无标签&nbsp;&nbsp;</div></a>
             <?php
-                if($tags_all) {
-                    if($tag_to_add || $except) {
+                if($tags || $except) {
+                    if($tags_all) {
                         foreach($tags_all as $tag) {
                             echo"
                 	        <div class='tag'>
-                	            &nbsp;&nbsp;<a href='?tags=$tag_to_add&except=$except_to_organize,$tag'>&nbsp;-&nbsp;</a>&nbsp;<a href='?tags=$tag'>$tag</a>&nbsp;<a href='?tags=$tag_to_add,$tag&except=$except_to_organize'>+</a>&nbsp;&nbsp;
+                	            &nbsp;&nbsp;<a href='?tags=$tag_to_add,$tag&except=$except_to_organize'>+</a>&nbsp;<a href='?tags=$tag'>$tag</a>&nbsp;<a href='?tags=$tag_to_add&except=$except_to_organize,$tag'>&nbsp;-&nbsp;</a>&nbsp;&nbsp;
                 	        </div>
                 	        ";
                 	    }
-                	    echo"
-                	        <a href='?'>
-                	        <div class='tag'>
-                	            &nbsp;&nbsp;清除筛选&nbsp;&nbsp;
-                	        </div>
-                	        </a>
-                	        ";
-                    } else {
+                    }
+                	echo"
+                	    <a href='?'>
+                	    <div class='tag'>
+                	        &nbsp;&nbsp;清除筛选&nbsp;&nbsp;
+                	    </div>
+                	    </a>
+                	";
+                } else {
+                    if($tags_all) {
                         foreach($tags_all as $tag) {
                             echo"
                 	        <a href='?tags=$tag'>
@@ -174,12 +181,6 @@ $(window).resize(resize);
                 	        ";
                 	    }
                     }
-                } else {
-                	echo "
-                        <div class='tag'>
-                		    <font color='grey'>无</font>
-                	    </div>
-                    ";
                 }
             ?>
         </div>
@@ -197,6 +198,7 @@ $(window).resize(resize);
 	    echo "<a class='btn btn-info' href='?action=edittag&tag=$tag_to_add'>&nbsp;&nbsp;&nbsp;编辑标签&nbsp;&nbsp;&nbsp;</a>&nbsp;&nbsp;&nbsp;";
 	    echo "<a class='btn btn-danger' href='?action=deletetag&tag=$tag_to_add'>&nbsp;&nbsp;&nbsp;删除标签&nbsp;&nbsp;&nbsp;</a>";
 	    echo "</div>";
+	    echo "<div style='margin-top:16px;'>". nl2br($result_tag_info) ."</div>";
     } ?>
 	
     <?php

@@ -53,7 +53,7 @@ $map_table = TB_PREFIX . "map_" . $user;
 $user_api_table = TB_PREFIX . "api_" . $user;
 
 check_table($data_table, "CREATE TABLE $data_table (id CHAR(32) PRIMARY KEY, url TEXT, source TEXT, info TEXT, time datetime NOT NULL DEFAULT CURRENT_TIMESTAMP);");
-check_table($tag_table, "CREATE TABLE $tag_table (id INT(3) AUTO_INCREMENT PRIMARY KEY, name CHAR(64) UNIQUE);");
+check_table($tag_table, "CREATE TABLE $tag_table (id INT(3) AUTO_INCREMENT PRIMARY KEY, name CHAR(64) UNIQUE, info TEXT);");
 check_table($map_table, "CREATE TABLE $map_table (data_id CHAR(32), tag_id INT(3), PRIMARY KEY (data_id, tag_id));");
 check_table($user_api_table, "CREATE TABLE $user_api_table (api_id CHAR(16), action CHAR(16), PRIMARY KEY(api_id, action));");
 

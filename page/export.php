@@ -26,7 +26,8 @@ if($data) {
         foreach($data_tag as $item) {
             $id = $item['id'];
             $name = $item['name'];
-            if(!$db -> query("INSERT INTO $tag_table (id, name) VALUES ('$id', '$name');")) {
+            $info = $item['info'];
+            if(!$db -> query("INSERT INTO $tag_table (id, name, info) VALUES ('$id', '$name', '$info');")) {
                 echo mysqli_error($db) . "<br>";
             } else {
                 echo "Import Tag '$name'<br>";
@@ -61,12 +62,15 @@ if($data) {
     	$item['time'] = $array['time'];
     	$data_data[$array['id']] = $item;
     }
-    $result = $db -> query("SELECT id, name FROM $tag_table;");
+    $result = $db -> query("SELECT id, name, info FROM $tag_table;");
     for ($i = 0; $i < $result -> num_rows; $i++) {
     	$array = $result -> fetch_array();
     	unset($item);
     	$item['id'] = $array['id'];
     	$item['name'] = $array['name'];
+    	if($array['info']) {
+    	    $item['info'] = $array['info'];
+    	}
     	$data_tag[$i] = $item;
     }
     $result = $db -> query("SELECT data_id, tag_id FROM $map_table;");
