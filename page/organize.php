@@ -38,7 +38,8 @@ if($todo == "settag") {
     jump_with_text("操作完成!", "?");
 } else {
     $tags = $_GET["tags"];
-    if($tags) {
+    $except = $_GET["except"];
+    if($tags || $except) {
         $tags = explode(",", $tags);
         $count = count($tags);
         $count_sub = 0;
@@ -52,23 +53,60 @@ if($todo == "settag") {
         }
         $count -= $count_sub;
         
-        if($count == 1) {
-            $tag = $tags[0];
-            if($tag == "_NULL_") {
-                $tag_title = "无标签";
-                $tag_to_add = "";
-                $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table) ORDER BY $data_table.time DESC;");
-            } else {
-                $allow_edit = TRUE;
-                $tag_title = $tag;
-                $tag_to_add = $tag;
-                $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag' ORDER BY $data_table.time DESC;");
+        if($count == 0) {           
+            $except = explode(",", $except);
+            $count_except = count($except);
+            for($i = 0; $i < $count_except; $i++) {
+                $except[$i] = trim($except[$i]);
+                if(!$except[$i]) {
+                    unset($except[$i]);
+                }
+            }
+            $result=$db->query("SELECT $data_table.id,info,url FROM $data_table WHERE $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", $except) ."')) GROUP BY $data_table.id ORDER BY $data_table.time DESC;");
+        } else if($count == 1) {
+            foreach($tags as $tag) {
+                if($tag == "_NULL_") {
+                    $tag_title = "无标签";
+                    $tag_to_add = "";
+                    $tag_to_organize = $tag;
+                    $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table) ORDER BY $data_table.time DESC;");
+                } else {
+                    $allow_edit = TRUE;
+                    $tag_title = $tag;
+                    $tag_to_add = $tag;
+                    $tag_to_organize = $tag;
+                    if($except) {
+                        $except = explode(",", $except);
+                        $count_except = count($except);
+                        for($i = 0; $i < $count_except; $i++) {
+                            $except[$i] = trim($except[$i]);
+                            if(!$except[$i]) {
+                                unset($except[$i]);
+                            }
+                        }
+                        $except_to_organize = implode(",", $except);
+                        $tag_title .= ",-" . implode(",-", $except);
+                        $except_sql = " AND $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", $except) ."'))";
+                    }
+                    $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag'$except_sql ORDER BY $data_table.time DESC;");
+                }
             }
         } else {
             $tag_title = implode(",", $tags);
             $tag_to_add = $tag_title;
             $sql = "'" . implode("','", $tags) . "'";
-            $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql) GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count ORDER BY $data_table.time DESC;");
+            if($except) {
+                $except = explode(",", $except);
+                $count_except = count($except);
+                for($i = 0; $i < $count_except; $i++) {
+                    $except[$i] = trim($except[$i]);
+                    if(!$except[$i]) {
+                        unset($except[$i]);
+                    }
+                }
+                $except_sql = " AND $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", $except) ."'))";
+            }
+            $result=$db->query("SELECT $data_table.id,info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql)$except_sql GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count ORDER BY $data_table.time DESC;");
         }
     } else {
     	$result=$db->query("SELECT id,info,url FROM $data_table ORDER BY $data_table.time DESC;");
