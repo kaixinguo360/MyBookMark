@@ -6,6 +6,13 @@ $url = $_GET['url'];
 $tags = $_GET['tags'];
 $source = $_GET['source'];
 $need_edit = $_GET['need_edit'];
+
+if($models_add) {
+    foreach($models_add as $model) {
+	    include("./model/" . $model . ".php");
+    }
+}
+
 $tags_select = explode(",", $tags);
 
 # Check Data

@@ -41,14 +41,14 @@ if($link_url) {
 
 function item_image($url, $info, $link_url=NULL) {
 $img_class = $info ? "grid-item-img" : "grid-item-img-only";
-item("<img class='$img_class' width=100% src='$url' />"
+item("<img class='$img_class' width=100% src='$url'/>"
     .($info ? "<div class='grid-item-info'><p>$info</p></div>" : "")
 , $link_url);
 }
 
 function item_image_linked($url, $info, $link_url) {
 $img_class = $info ? "grid-item-img" : "grid-item-img-only";
-item("<a href='$link_url'><img class='$img_class' width=100% src='$url' /></a>"
+item("<a href='$link_url'><img class='$img_class' width=100% src='$url'/></a>"
     .($info ? "<div class='grid-item-info'><p>$info</p></div>" : "")
 );
 }

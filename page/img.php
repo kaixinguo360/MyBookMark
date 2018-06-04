@@ -59,8 +59,8 @@ for ($i = 0; $i < $result -> num_rows; $i++) {
 	$info = nl2br($info);
 	item_image_linked($url, $info, $url);
 }
-if($models) {
-    foreach($models as $model) {
+if($models_img) {
+    foreach($models_img as $model) {
 	    include("./model/" . $model . ".php");
     }
 }
