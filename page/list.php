@@ -5,6 +5,20 @@
 # Get Tag
 $tags = $_GET["tags"];
 $except = $_GET["except"];
+$album = $_GET["album"];
+
+if($album) {
+	if($album != "_NULL_") {
+		$result_album = run_sql("SELECT id, info FROM $album_table WHERE name='$album';");
+	    if($result_album) {
+		    $album_id = $result_album -> fetch_array()['id'];
+		    $album_sql = " AND $data_table.id IN (SELECT $amap_table.data_id FROM $amap_table WHERE album_id='$album_id')";
+	    }
+	} 
+} else {
+	require("./page/common/albums.php");
+	exit();
+}
 
 # Get Data
 if($tags  || $except) {
@@ -32,14 +46,14 @@ if($tags  || $except) {
         }
         $except_to_organize = implode(",", $except);
         $tag_title .= ",-" . implode(",-", $except);
-        $result=$db->query("SELECT $data_table.id,info,url FROM $data_table WHERE $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", $except) ."')) GROUP BY $data_table.id ORDER BY $data_table.time DESC;");
+        $result=$db->query("SELECT $data_table.id,info,url FROM $data_table WHERE $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", $except) ."'))$album_sql GROUP BY $data_table.id ORDER BY $data_table.time DESC;");
     } else if($count == 1) {
         foreach($tags as $tag) {
             if($tag == "_NULL_") {
                 $tag_title = "无标签";
                 $tag_to_add = "";
                 $tag_to_organize = $tag;
-                $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table) ORDER BY $data_table.time DESC;");
+                $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table)$album_sql ORDER BY $data_table.time DESC;");
             } else {
                 $allow_edit = TRUE;
                 $tag_title = $tag;
@@ -62,7 +76,7 @@ if($tags  || $except) {
                     $tag_title .= ",-" . implode(",-", $except);
                     $except_sql = " AND $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", $except) ."'))";
                 }
-                $result=$db->query("SELECT $data_table.id,$data_table.info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag'$except_sql ORDER BY $data_table.time DESC;");
+                $result=$db->query("SELECT $data_table.id,$data_table.info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag'$except_sql$album_sql ORDER BY $data_table.time DESC;");
             }
             break;
         }
@@ -84,10 +98,10 @@ if($tags  || $except) {
             $tag_title .= ",-" . implode(",-", $except);
             $except_sql = " AND $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", $except) ."'))";
         }
-        $result=$db->query("SELECT $data_table.id,$data_table.info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql)$except_sql GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count ORDER BY $data_table.time DESC;");
+        $result=$db->query("SELECT $data_table.id,$data_table.info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql)$except_sql$album_sql GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count ORDER BY $data_table.time DESC;");
     }
 } else {
-	$result=$db->query("SELECT id,info,url FROM $data_table ORDER BY $data_table.time DESC;");
+	$result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN ('')$album_sql ORDER BY $data_table.time DESC;");
 }
 
 # Check Data
@@ -139,31 +153,29 @@ $(window).resize(resize);
 
 <div class="panel-heading">
 	<?php
-	if($tag_title) {
-		echo "<a href='?'>图片 - $tag_title</a>";
-	} else {
-		echo "图片";
-	}
+	$title = $album != "_NULL_" ? $album : "图片";
+	$title = $tag_title ? ("$title : $tag_title") : $title;
+	echo "<a href='?'>$title</a>";
 	?>
 </div>
 <div class="panel-body text-center grid-div">
     <div style='margin:0 10px 0 10px;'>
         <div class='btn btn-info' id='show_tag'>筛选</div>
         <div class='tags' hidden=true style='margin:10px auto;'>
-            <a href='?tags=_NULL_'><div class='tag'>&nbsp;&nbsp;无标签&nbsp;&nbsp;</div></a>
+            <a href='?album=$album&tags=_NULL_'><div class='tag'>&nbsp;&nbsp;无标签&nbsp;&nbsp;</div></a>
             <?php
                 if($tags || $except) {
                     if($tags_all) {
                         foreach($tags_all as $tag) {
                             echo"
                 	        <div class='tag'>
-                	            &nbsp;&nbsp;<a href='?tags=$tag_to_add,$tag&except=$except_to_organize'>+</a>&nbsp;<a href='?tags=$tag'>$tag</a>&nbsp;<a href='?tags=$tag_to_add&except=$except_to_organize,$tag'>&nbsp;-&nbsp;</a>&nbsp;&nbsp;
+                	            &nbsp;&nbsp;<a href='?album=$album&tags=$tag_to_add,$tag&except=$except_to_organize'>+</a>&nbsp;<a href='?album=$album&tags=$tag'>$tag</a>&nbsp;<a href='?album=$album&tags=$tag_to_add&except=$except_to_organize,$tag'>&nbsp;-&nbsp;</a>&nbsp;&nbsp;
                 	        </div>
                 	        ";
                 	    }
                     }
                 	echo"
-                	    <a href='?'>
+                	    <a href='?album=$album'>
                 	    <div class='tag'>
                 	        &nbsp;&nbsp;清除筛选&nbsp;&nbsp;
                 	    </div>
@@ -173,9 +185,9 @@ $(window).resize(resize);
                     if($tags_all) {
                         foreach($tags_all as $tag) {
                             echo"
-                	        <a href='?tags=$tag'>
+                	        <a href='?album=$album&tags=$tag'>
                 	        <div class='tag'>
-                	            &nbsp;&nbsp;$tag&nbsp;<a href='?tags=$tag_to_add&except=$except_to_organize,$tag'>&nbsp;-&nbsp;</a>&nbsp;&nbsp;
+                	            &nbsp;&nbsp;$tag&nbsp;<a href='?album=$album&tags=$tag_to_add&except=$except_to_organize,$tag'>&nbsp;-&nbsp;</a>&nbsp;&nbsp;
                 	        </div>
                 	        </a>
                 	        ";
@@ -187,9 +199,12 @@ $(window).resize(resize);
 	</div>
     <div style='margin-top:16px;'>
 	    <?php
-	    echo "<a class='btn btn-info' href='?action=add&tags=$tag_to_add'>&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;</a>";
+	    if($album != "_NULL_") {
+	        echo "<a class='btn btn-info' href='?action=album&album=$album'>&nbsp;&nbsp;&nbsp;添加&nbsp;&nbsp;&nbsp;</a>&nbsp;&nbsp;&nbsp;";
+	        echo "<a class='btn btn-info' href='?action=editalbum&album=$album'>&nbsp;&nbsp;&nbsp;编辑&nbsp;&nbsp;&nbsp;</a>";
+	    }
 	    if($result -> num_rows) {
-	        echo "&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href='?action=organize&tags=$tag_to_organize&except=$except_to_organize'>&nbsp;&nbsp;&nbsp;组织&nbsp;&nbsp;&nbsp;</a>";
+	        echo ($album != "_NULL_" ? "&nbsp;&nbsp;&nbsp;" : "") . "<a class='btn btn-info' href='?action=organize&album=$album&tags=$tag_to_organize&except=$except_to_organize'>&nbsp;&nbsp;&nbsp;组织&nbsp;&nbsp;&nbsp;</a>";
 	    }
 	    ?>
 	</div>

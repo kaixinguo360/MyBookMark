@@ -32,7 +32,7 @@ echo "
         <input name='tag' value='$tag' hidden=true/>
         <pre>$tag</pre>
         <div class='form-group' id='inputdiv'>
-            <input class='form-control inputbox' placeholder='New Name' type='text' name='new_name' autocomplete=false />
+            <input class='form-control inputbox' placeholder='New Name' type='text' name='new_name' autocomplete=off />
         </div>
         <div class='form-group' id='inputdiv'>
             <textarea class='form-control inputbox' id='info' placeholder='Info' type='text' name='info' style='height:40%;'>$info</textarea>
