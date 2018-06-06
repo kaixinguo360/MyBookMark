@@ -36,10 +36,6 @@ if($url && !$need_edit) {
 
 ?>
 
-<script>
-alert(window.clipboardData.getData("text"));
-</script>
-
 <div class="panel-heading">
 	<a href="?">添加图片</a>
 </div>
@@ -80,12 +76,18 @@ alert(window.clipboardData.getData("text"));
             ;}
             echo "</div></a>";
         } else {
-            echo "
-    <br>
+            echo ($img_storage ? "<script async src='//$img_storage/sdk/pup.js' data-url='https://$img_storage/upload' data-auto-insert='direct-links'></script>" : "")
+    ."<br>
     <form method='get'>
         <input name='action' value='add' hidden=true/>
         <div class='form-group' id='inputdiv'>
-            <input class='form-control inputbox' id='url' placeholder='URL' type='text' name='url' value='$url' autocomplete='off' />
+            ". ($img_storage ? "
+                <div class='input-group'>
+                    <input class='form-control inputbox' id='url' placeholder='URL' type='text' name='url' value='$url' autocomplete='off' />
+                    <a class='input-group-addon btn btn-info' data-chevereto-pup-trigger data-target='#url'>上传</a>
+                </div>" : "
+                <input class='form-control inputbox' id='url' placeholder='URL' type='text' name='url' value='$url' autocomplete='off' />
+            ") ."
         </div>
         <div class='form-group' id='inputdiv'>
             <input class='form-control inputbox' id='source' placeholder='Source' type='text' name='source' value='$source' autocomplete='off' />

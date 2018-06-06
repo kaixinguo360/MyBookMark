@@ -12,6 +12,9 @@ define("ROOT_USER", "root");
 $models_add = array("pixiv");
 $models_img = array("img_search");
 
+# Set Img Storage
+$img_storage = "";
+
 # Connect To Database
 $db = new mysqli(DB_HOST,DB_USER,DB_PASS,DB_NAME);
 if(mysqli_connect_error()){

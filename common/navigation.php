@@ -12,7 +12,7 @@
         <table class="text-right" style="margin: 16px auto 0 auto">
             <tr>
                 <td>
-                    <input class='form-control inputbox' id='url' placeholder='URL' type='text' name='url' autocomplete='off' style="min-width:100px;" />&nbsp;&nbsp;&nbsp;
+                    <input class='form-control inputbox' placeholder='URL' type='text' name='url' autocomplete='off' style="min-width:100px;" />&nbsp;&nbsp;&nbsp;
                 </td>
                 <td>
                     <input class="form-control btn btn-info" id='from_url' type="submit" value="来自网页" />&nbsp;&nbsp;&nbsp;
