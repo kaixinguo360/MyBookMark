@@ -8,12 +8,31 @@ $todo = $_POST["todo"];
 
 if($album) {
 	if($album != "_NULL_") {
-		$result_album = run_sql("SELECT id, info FROM $album_table WHERE name='$album';");
+		$result_album = run_sql("SELECT id, info, tags, except FROM $album_table WHERE name='$album';");
 	    if($result_album) {
-		    $album_id = $result_album -> fetch_array()['id'];
-		    $album_sql = " AND $data_table.id IN (SELECT $amap_table.data_id FROM $amap_table WHERE album_id='$album_id')";
+		    $array = $result_album -> fetch_array();
+		    $album_id = $array['id'];
+		    $tag_info = $array['info'];
+		    $album_tags = explode(',', $array['tags']);
+		    for($i = 0; $i < count($album_tags); $i++) {
+                $album_tags[$i] = trim($album_tags[$i]);
+                if(!$album_tags[$i]) {
+                    unset($album_tags[$i]);
+                }
+            }
+            $album_except = explode(',', $array['except']);
+		    for($i = 0; $i < count($album_except); $i++) {
+                $album_except[$i] = trim($album_except[$i]);
+                if(!$album_except[$i]) {
+                    unset($album_except[$i]);
+                }
+            }
+		    //$album_sql = " AND $data_table.id IN (SELECT $amap_table.data_id FROM $amap_table WHERE album_id='$album_id')";
 	    }
-	} 
+	} else {
+		$album_tags = array();
+		$album_except = array();
+	}
 }
 
 if($todo == "settag") {
@@ -50,21 +69,21 @@ if($todo == "settag") {
 } else {
     $tags = $_GET["tags"];
     $except = $_GET["except"];
-    if($tags || $except) {
-        $tags = explode(",", $tags);
-        $count = count($tags);
-        $count_sub = 0;
-        
-        for($i = 0; $i < $count; $i++) {
-            $tags[$i] = trim($tags[$i]);
-            if(!$tags[$i]) {
-                unset($tags[$i]);
-                $count_sub++;
-            }
+/* * * * */
+if($tags  || $except || $album_tags || $album_except) {
+    $tags = explode(",", $tags);
+    $count = count($tags);
+    
+    for($i = 0; $i < $count; $i++) {
+        $tags[$i] = trim($tags[$i]);
+        if(!$tags[$i]) {
+            unset($tags[$i]);
         }
-        $count -= $count_sub;
-        
-        if($count == 0) {           
+    }
+    $count = count($tags) + count($album_tags);
+    
+    if($count == 0) {
+        if($except || $album_except) {
             $except = explode(",", $except);
             $count_except = count($except);
             for($i = 0; $i < $count_except; $i++) {
@@ -73,55 +92,52 @@ if($todo == "settag") {
                     unset($except[$i]);
                 }
             }
-            $result=$db->query("SELECT $data_table.id,info,url FROM $data_table WHERE $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", $except) ."'))$album_sql GROUP BY $data_table.id ORDER BY $data_table.time DESC;");
-        } else if($count == 1) {
-            foreach($tags as $tag) {
-                if($tag == "_NULL_") {
-                    $tag_title = "无标签";
-                    $tag_to_add = "";
-                    $tag_to_organize = $tag;
-                    $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table)$album_sql ORDER BY $data_table.time DESC;");
-                } else {
-                    $allow_edit = TRUE;
-                    $tag_title = $tag;
-                    $tag_to_add = $tag;
-                    $tag_to_organize = $tag;
-                    if($except) {
-                        $except = explode(",", $except);
-                        $count_except = count($except);
-                        for($i = 0; $i < $count_except; $i++) {
-                            $except[$i] = trim($except[$i]);
-                            if(!$except[$i]) {
-                                unset($except[$i]);
-                            }
-                        }
-                        $except_to_organize = implode(",", $except);
-                        $tag_title .= ",-" . implode(",-", $except);
-                        $except_sql = " AND $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", $except) ."'))";
-                    }
-                    $result=$db->query("SELECT $data_table.id,$data_table.info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name='$tag'$except_sql$album_sql ORDER BY $data_table.time DESC;");
-                }
-            }
-        } else {
-            $tag_title = implode(",", $tags);
-            $tag_to_add = $tag_title;
-            $sql = "'" . implode("','", $tags) . "'";
-            if($except) {
-                $except = explode(",", $except);
-                $count_except = count($except);
-                for($i = 0; $i < $count_except; $i++) {
-                    $except[$i] = trim($except[$i]);
-                    if(!$except[$i]) {
-                        unset($except[$i]);
-                    }
-                }
-                $except_sql = " AND $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", $except) ."'))";
-            }
-            $result=$db->query("SELECT $data_table.id,$data_table.info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql)$except_sql$album_sql GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count ORDER BY $data_table.time DESC;");
+            $except_to_organize = implode(",", $except);
+            $tag_title .= $except ? (",-" . implode(",-", $except)) : "";
         }
-    } else {
-    	$result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN ('')$album_sql ORDER BY $data_table.time DESC;");
+        $result=$db->query("SELECT $data_table.id,info,url FROM $data_table WHERE $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", array_merge($except ? $except : array(), $album_except)) ."'))$album_sql GROUP BY $data_table.id ORDER BY $data_table.time DESC;");
+    } else if($count == 1) {
+        foreach($tags as $tag) {
+            if($tag == "_NULL_") {
+                $tag_title = "无标签";
+                $tag_to_add = "";
+                $tag_to_organize = $tag;
+                $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table)$album_sql ORDER BY $data_table.time DESC;");
+                $is_null = TRUE;
+            } else {
+                $allow_edit = TRUE;
+                $result_tag_info = $db->query("SELECT info FROM $tag_table WHERE name='$tag';");
+                if($result_tag_info) {
+                    $tag_info = $result_tag_info -> fetch_array()['info'];
+                }
+            }
+            break;
+        }
     }
+    if($count >= 1 && !$is_null) {
+        $tag_title = implode(",", $tags);
+        $tag_to_add = $tag_title;
+        $tag_to_organize = $tag_title;
+        $sql = "'" . implode("','", array_merge($tags, $album_tags)) . "'";
+        if($except || $album_except) {
+            $except = explode(",", $except);
+            $count_except = count($except);
+            for($i = 0; $i < $count_except; $i++) {
+                $except[$i] = trim($except[$i]);
+                if(!$except[$i]) {
+                    unset($except[$i]);
+                }
+            }
+            $except_to_organize = implode(",", $except);
+            $tag_title .= $except ? (",-" . implode(",-", $except)) : "";
+            $except_sql = " AND $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", array_merge($except, $album_except)) ."'))";
+        }
+        $result=$db->query("SELECT $data_table.id,$data_table.info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql)$except_sql$album_sql GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count ORDER BY $data_table.time DESC;");
+    }
+} else {
+	$result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN ('')$album_sql ORDER BY $data_table.time DESC;");
+}
+/* * * * */
     
     for ($i = 0; $i < $result -> num_rows; $i++) {
     	$array = $result -> fetch_array();

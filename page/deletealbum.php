@@ -6,14 +6,8 @@ $verified = $_GET['verified'];
 
 # Delete Data
 if($album && $verified == "true") {
-    $result = $db -> query("SELECT id FROM $album_table WHERE name='$album';");
-	$album_id = $result -> fetch_array()['id'];
-	
-    $result = $db -> query("DELETE FROM $album_table WHERE id='$album_id';");
+    $result = $db -> query("DELETE FROM $album_table WHERE name='$album';");
     $deleted = $result;
-    if($deleted) {
-        $result = $db -> query("DELETE FROM $amap_table WHERE album_id='$album_id';");
-    }
 }
 
 ?>

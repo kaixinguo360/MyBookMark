@@ -3,11 +3,14 @@
 # Get Data
 $name = $_GET['name'];
 $info = $_GET['info'];
+$tags = $_GET['tags'];
+$except = $_GET['except'];
+$need_edit = $_GET['need_edit'];
 
 # Check Data
-if($name) {
+if($name && !$need_edit) {
     # Add to Database
-    $added = run_sql("INSERT INTO $album_table (name, info) VALUES ('$name', '$info');");
+    $added = run_sql("INSERT INTO $album_table (name, info, tags, except) VALUES ('$name', '$info', '$tags', '$except');");
 }
 
 ?>
@@ -31,6 +34,12 @@ alert(window.clipboardData.getData("text"));
         <input name='action' value='addalbum' hidden=true/>
         <div class='form-group' id='inputdiv'>
             <input class='form-control inputbox' id='name' placeholder='Name' type='text' name='name' value='$name' autocomplete='off' />
+        </div>
+        <div class='form-group' id='inputdiv'>
+            <input class='form-control inputbox' id='tags' placeholder='Tags' type='text' name='tags' value='$tags' autocomplete='off' />
+        </div>
+        <div class='form-group' id='inputdiv'>
+            <input class='form-control inputbox' id='except' placeholder='Except' type='text' name='except' value='$except' autocomplete='off' />
         </div>
         <div class='form-group' id='inputdiv'>
             <textarea class='form-control inputbox' id='info' placeholder='Info' type='text' name='info' style='height:40%;'>$info</textarea>

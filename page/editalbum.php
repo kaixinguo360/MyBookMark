@@ -4,18 +4,20 @@
 $album = $_GET['album'];
 $name = $_GET['name'];
 $info = $_GET['info'];
+$tags = $_GET['tags'];
+$except = $_GET['except'];
 
 if(isset($_GET['name']) && $album) {
-	if($name) {
-        $result = $db -> query("UPDATE $album_table SET name='$name', info='$info' WHERE name='$album';");
-    } else {
-        $result = $db -> query("UPDATE $album_table SET info='$info' WHERE name='$album';");
-    }
+    $result = $db -> query("UPDATE $album_table SET name='$name', tags='$tags', except='$except', info='$info' WHERE name='$album';");
     jump_with_text("更新" . ($result ? "成功" : "失败"), "?tags=" . ($new_name ? $new_name : $tag));
 } else {
-    $result = $db -> query("SELECT info FROM $album_table WHERE name='$album';");
+    $result = $db -> query("SELECT name, tags, except, info FROM $album_table WHERE name='$album';");
     if($result) {
-        $info = $result -> fetch_array()['info'];
+        $array = $result -> fetch_array();
+        $name = $array['name'];
+        $tags = $array['tags'];
+        $except = $array['except'];
+        $info = $array['info'];
     }
 }
 
@@ -28,9 +30,14 @@ echo "
     <form method='get'>
         <input name='action' value='editalbum' hidden=true/>
         <input name='album' value='$album' hidden=true/>
-        <pre>$album</pre>
         <div class='form-group' id='inputdiv'>
-            <input class='form-control inputbox' placeholder='New Name' type='text' name='name' autocomplete=off />
+            <input class='form-control inputbox' placeholder='Name' type='text' name='name' value='$name' autocomplete=off />
+        </div>
+        <div class='form-group' id='inputdiv'>
+            <input class='form-control inputbox' id='tags' placeholder='Tags' type='text' name='tags' value='$tags' autocomplete='off' />
+        </div>
+        <div class='form-group' id='inputdiv'>
+            <input class='form-control inputbox' id='except' placeholder='Except' type='text' name='except' value='$except' autocomplete='off' />
         </div>
         <div class='form-group' id='inputdiv'>
             <textarea class='form-control inputbox' id='info' placeholder='Info' type='text' name='info' style='height:40%;'>$info</textarea>

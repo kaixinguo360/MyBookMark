@@ -7,6 +7,7 @@ if($data) {
     $data_data = $data['data'];
     $data_tag = $data['tag'];
     $data_map = $data['map'];
+    $data_album = $data['album'];
     if($data_data) {
         echo "<br>Import Data...<br>";
         foreach($data_data as $id => $item) {
@@ -46,6 +47,21 @@ if($data) {
             }
         }
     }
+    if($data_album) {
+        echo "<br>Import Album...<br>";
+        foreach($data_album as $item) {
+            $id = $item['id'];
+            $name = $item['name'];
+            $tags = $item['tags'];
+            $except = $item['except'];
+            $info = $item['info'];
+            if(!$db -> query("INSERT INTO $album_table (id, name, tags, except, info) VALUES ('$id', '$name', '$tags', '$except', '$info');")) {
+                echo mysqli_error($db) . "<br>";
+            } else {
+                echo "Import Album '$name'<br>";
+            }
+        }
+    }
     exit("<br>操作完成<br><br><a class='btn btn-info' href='?'>返回</a><br><br>");
 } else {
     $result = $db -> query("SELECT id, url, info, source, time FROM $data_table;");
@@ -81,10 +97,28 @@ if($data) {
     	$item['tag_id'] = $array['tag_id'];
     	$data_map[$i] = $item;
     }
+    $result = $db -> query("SELECT id, name, tags, except, info FROM $album_table;");
+    for ($i = 0; $i < $result -> num_rows; $i++) {
+    	$array = $result -> fetch_array();
+    	unset($item);
+    	$item['id'] = $array['id'];
+        $item['name'] = $array['name'];
+        if($array['tags']) {
+        	$item['tags'] = $array['tags'];
+        }
+        if($array['except']) {
+            $item['except'] = $array['except'];
+        }
+        if($array['info']) {
+            $item['info'] = $array['info'];
+        }
+    	$data_album[$i] = $item;
+    }
     unset($data);
     $data['data'] = $data_data;
     $data['tag'] = $data_tag;
     $data['map'] = $data_map;
+    $data['album'] = $data_album;
     $data = json_encode($data, JSON_UNESCAPED_SLASHES);
 }
 

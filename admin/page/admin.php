@@ -21,11 +21,10 @@ if($todo == "create") {
             $tag_table = TB_PREFIX . "tag_" . $user;
             $map_table = TB_PREFIX . "map_" . $user;
             $album_table = TB_PREFIX . "album_" . $user;
-            $amap_table = TB_PREFIX . "amap_" . $user;
             $user_api_table = TB_PREFIX . "api_" . $user;
             
             $result = $db -> query("DELETE FROM $user_table WHERE id='$user';");
-            $result = $db -> query("DROP TABLE $data_table, $tag_table, $map_table, $user_api_table, $album_table, $amap_table;");
+            $result = $db -> query("DROP TABLE $data_table, $tag_table, $map_table, $user_api_table, $album_table;");
         } else {
             $error = "输入用户名不一致, 删除操作终止!";
         }
