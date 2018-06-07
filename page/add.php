@@ -76,7 +76,7 @@ if($url && !$need_edit) {
             ;}
             echo "</div></a>";
         } else {
-            echo ($img_storage ? "<script async src='//$img_storage/sdk/pup.js' data-url='https://$img_storage/upload' data-auto-insert='direct-links'></script>" : "")
+            echo ($img_storage ? "<script async src='//$img_storage/sdk/pup.js' data-url='https://$img_storage/upload' data-auto-insert='direct-links' mode='manual'></script>" : "")
     ."<br>
     <form method='get'>
         <input name='action' value='add' hidden=true/>

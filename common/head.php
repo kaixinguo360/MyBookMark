@@ -8,6 +8,7 @@
     <script src="//code.jquery.com/jquery.js"></script>
     <script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<script src="//unpkg.com/masonry-layout@4/dist/masonry.pkgd.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/lazysizes/4.0.4/lazysizes.min.js"></script>
     <title><?php echo $title ?></title>
 	</head>
 

@@ -124,7 +124,7 @@ for ($i = 0; $i < $result_tag -> num_rows; $i++) {
 ?>
 
 <script>
-function resize() {
+function init() {
     if($(window).width() > 404) {
         $('.grid-item').width('200px');
     } else {
@@ -141,14 +141,23 @@ function resize() {
         fitWidth: true,
     });
 }
+function resize() {
+	$('.grid').masonry();
+}
+function resize_tags() {
+	$('.tags').masonry();
+}
 $().ready(function() {
-    resize();
+    init();
+    $('img').each(function() {
+        this.addEventListener('load', resize, true);
+    });
     $("#show_tag").click(function() {
-        $(".tags").slideToggle(0, resize);
+        $(".tags").slideToggle(0, resize_tags);
     });
 });
-$(window).load(resize);
-$(window).resize(resize);
+$(window).load(init);
+$(window).resize(init);
 </script>
 
 <div class="panel-heading">
@@ -162,7 +171,7 @@ $(window).resize(resize);
     <div style='margin:0 10px 0 10px;'>
         <div class='btn btn-info' id='show_tag'>筛选</div>
         <div class='tags' hidden=true style='margin:10px auto;'>
-            <a href='?album=$album&tags=_NULL_'><div class='tag'>&nbsp;&nbsp;无标签&nbsp;&nbsp;</div></a>
+            <a href='?album=<?php echo $album; ?>&tags=_NULL_'><div class='tag'>&nbsp;&nbsp;无标签&nbsp;&nbsp;</div></a>
             <?php
                 if($tags || $except) {
                     if($tags_all) {
