@@ -39,9 +39,9 @@ if($link_url) {
 }
 }
 
-function item_image($url, $info, $link_url=NULL) {
+function item_image($url, $info, $link_url=NULL, $loadingimg) {
 $img_class = $info ? "grid-item-img" : "grid-item-img-only";
-item("<img class='lazyload $img_class'". ($_COOKIE['loadingimg'] ? " src='".$_COOKIE['loadingimg']."'" : "") ." data-src='$url'/>"
+item("<img class='lazyload $img_class'". ($loadingimg ? " src='$loadingimg'" : "") ." data-src='$url'/>"
     .($info ? "<div class='grid-item-info'><p>$info</p></div>" : "")
 , $link_url);
 }

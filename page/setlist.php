@@ -5,9 +5,13 @@ $loadingimg = $_POST['loadingimg'];
 
 if($_POST['is_update']) {
     if($sort=='ASC' || $sort=='DESC' || $sort=='RAND') {
-        setcookie("sort_mode", $sort, time()+60*60*24*30);
+        run_sql("DELETE FROM $setting_table WHERE name='sort';");
+        run_sql("INSERT INTO $setting_table (name, value) VALUES ('sort', '$sort');");
     }
-    setcookie("loadingimg", $loadingimg, time()+60*60*24*30);
+    run_sql("DELETE FROM $setting_table WHERE name='loadingimg';");
+    run_sql("INSERT INTO $setting_table (name, value) VALUES ('loadingimg', '$loadingimg');");
+    
+    setcookie("updated", NULL, time() - 100);
     jump_with_text('设置成功', '?');
 }
 
@@ -21,9 +25,9 @@ if($_POST['is_update']) {
         <div style='margin:10px'><b>排序方式</b></div>
         <input hidden=true name='is_update' value='true'/>
         <select class='form-control' name='sort'>
-            <option value='DESC' <?php if($_COOKIE['sort_mode']=='DESC') echo"selected='selected'";?>>最新在前</option>
-            <option value='ASC' <?php if($_COOKIE['sort_mode']=='ASC') echo"selected='selected'";?>>最旧在前</option>
-            <option value='RAND' <?php if($_COOKIE['sort_mode']=='RAND') echo"selected='selected'";?>>随机</option>
+            <option value='DESC' <?php if($_COOKIE['sort']=='DESC') echo"selected='selected'";?>>最新在前</option>
+            <option value='ASC' <?php if($_COOKIE['sort']=='ASC') echo"selected='selected'";?>>最旧在前</option>
+            <option value='RAND' <?php if($_COOKIE['sort']=='RAND') echo"selected='selected'";?>>随机</option>
         </select>
         <br>
         <div style='margin:10px'><b>加载占位图片</b></div>

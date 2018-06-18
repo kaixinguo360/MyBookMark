@@ -2,15 +2,28 @@
 
 //$sql = "SELECT $data_table.id,info,url FROM ($data_table LEFT JOIN $map_table ON $data_table.id=$map_table.data_id) LEFT JOIN $tag_table ON $map_table.tag_id=$tag_table.id ";
 
-# Get Tag
+# ReFresh Settings
+if(!$_COOKIE["updated"]) {
+    $result_settings = run_sql("SELECT name, value FROM $setting_table WHERE name IN ('sort', 'loadingimg')");
+    for ($i = 0; $i < $result_settings -> num_rows; $i++) {
+    	$array = $result_settings -> fetch_array();
+    	setcookie($array["name"], $array["value"], time()+60*60*24*30);
+    }
+    setcookie("updated", "true", time()+60*60*24*30);
+}
+
+# Get Params
 $tags = $_GET["tags"];
 $except = $_GET["except"];
 $album = $_GET["album"];
-$sort_mode = $_COOKIE["sort_mode"];
 
-if($sort_mode == "RAND") {
+# Get Cookies
+$sort = isset($_GET["sort"]) ? $_GET["sort"] : $_COOKIE["sort"];
+$loadingimg = isset($_GET["loadingimg"]) ? $_GET["loadingimg"] : $_COOKIE["loadingimg"];
+
+if($sort == "RAND") {
     $sort_sql = " ORDER BY RAND()";
-} else if($sort_mode == "ASC") {
+} else if($sort == "ASC") {
     $sort_sql = " ORDER BY $data_table.time ASC";
 } else {
     $sort_sql = " ORDER BY $data_table.time DESC";
@@ -257,7 +270,7 @@ $(window).resize(init);
             if(mb_strlen($info) > 50) {
                 $info = mb_substr($info, 0, 50) . "...";
             }
-        	item_image($url, $info, "?action=img&id=$id");
+        	item_image($url, $info, "?action=img&id=$id", $loadingimg);
         }
         echo "</div>";
     } else {
