@@ -18,20 +18,12 @@ $except = $_GET["except"];
 $album = $_GET["album"];
 
 # Get Cookies
-$sort = isset($_GET["sort"]) ? $_GET["sort"] : $_COOKIE["sort"];
-$loadingimg = isset($_GET["loadingimg"]) ? $_GET["loadingimg"] : $_COOKIE["loadingimg"];
-
-if($sort == "RAND") {
-    $sort_sql = " ORDER BY RAND()";
-} else if($sort == "ASC") {
-    $sort_sql = " ORDER BY $data_table.time ASC";
-} else {
-    $sort_sql = " ORDER BY $data_table.time DESC";
-}
+$sort = $_COOKIE["sort"];
+$loadingimg = $_COOKIE["loadingimg"];
 
 if($album) {
 	if($album != "_NULL_") {
-		$result_album = run_sql("SELECT id, info, tags, except FROM $album_table WHERE name='$album';");
+		$result_album = run_sql("SELECT id, info, tags, except, sort, loadingimg FROM $album_table WHERE name='$album';");
 	    if($result_album) {
 		    $array = $result_album -> fetch_array();
 		    $album_id = $array['id'];
@@ -50,6 +42,8 @@ if($album) {
                     unset($album_except[$i]);
                 }
             }
+            $sort = $array['sort'] ? $array['sort'] : $sort;
+            $loadingimg = $array['loadingimg'] ? $array['loadingimg'] : $loadingimg;
 		    //$album_sql = " AND $data_table.id IN (SELECT $amap_table.data_id FROM $amap_table WHERE album_id='$album_id')";
 	    }
 	} else {
@@ -59,6 +53,17 @@ if($album) {
 } else {
 	require("./page/common/albums.php");
 	exit();
+}
+
+# Set Sort Mode
+$sort = isset($_GET["sort"]) ? $_GET["sort"] : $sort;
+$loadingimg = isset($_GET["loadingimg"]) ? $_GET["loadingimg"] : $loadingimg;
+if($sort == "RAND") {
+    $sort_sql = " ORDER BY RAND()";
+} else if($sort == "ASC") {
+    $sort_sql = " ORDER BY $data_table.time ASC";
+} else {
+    $sort_sql = " ORDER BY $data_table.time DESC";
 }
 
 # Get Data

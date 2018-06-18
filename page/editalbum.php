@@ -6,18 +6,22 @@ $name = $_GET['name'];
 $info = $_GET['info'];
 $tags = $_GET['tags'];
 $except = $_GET['except'];
+$sort = $_GET['sort'];
+$loadingimg = $_GET['loadingimg'];
 
 if(isset($_GET['name']) && $album) {
-    $result = $db -> query("UPDATE $album_table SET name='$name', tags='$tags', except='$except', info='$info' WHERE name='$album';");
+    $result = $db -> query("UPDATE $album_table SET name='$name', tags='$tags', except='$except', info='$info', sort='$sort', loadingimg='$loadingimg' WHERE name='$album';");
     jump_with_text("更新" . ($result ? "成功" : "失败"), "?tags=" . ($new_name ? $new_name : $tag));
 } else {
-    $result = $db -> query("SELECT name, tags, except, info FROM $album_table WHERE name='$album';");
+    $result = $db -> query("SELECT name, tags, except, info, sort, loadingimg FROM $album_table WHERE name='$album';");
     if($result) {
         $array = $result -> fetch_array();
         $name = $array['name'];
         $tags = $array['tags'];
         $except = $array['except'];
         $info = $array['info'];
+        $sort = $array['sort'];
+        $loadingimg = $array['loadingimg'];
     }
 }
 
@@ -38,6 +42,17 @@ echo "
         </div>
         <div class='form-group' id='inputdiv'>
             <input class='form-control inputbox' id='except' placeholder='Except' type='text' name='except' value='$except' autocomplete='off' />
+        </div>
+        <div class='form-group' id='inputdiv'>
+            <select class='form-control' name='sort'>
+                <option value='' ". (($sort=='') ? "selected='selected'" : "" ) .">默认排序</option>
+                <option value='DESC' ". (($sort=='DESC') ? "selected='selected'" : "" ) .">最新在前</option>
+                <option value='ASC' ". (($sort=='ASC') ? "selected='selected'" : "" ) .">最旧在前</option>
+                <option value='RAND' ". (($sort=='RAND') ? "selected='selected'" : "" ) .">随机</option>
+            </select>
+        </div>
+        <div class='form-group' id='inputdiv'>
+            <input class='form-control inputbox' id='loadingimg' placeholder='Loadingimg' type='text' name='loadingimg' value='$loadingimg' autocomplete='off' />
         </div>
         <div class='form-group' id='inputdiv'>
             <textarea class='form-control inputbox' id='info' placeholder='Info' type='text' name='info' style='height:40%;'>$info</textarea>

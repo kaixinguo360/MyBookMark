@@ -61,7 +61,9 @@ if($data) {
             $tags = $item['tags'];
             $except = $item['except'];
             $info = $item['info'];
-            if(!$db -> query("INSERT INTO $album_table (id, name, tags, except, info) VALUES ('$id', '$name', '$tags', '$except', '$info');")) {
+            $sort = $item['sort'];
+            $loadingimg = $item['loadingimg'];
+            if(!$db -> query("INSERT INTO $album_table (id, name, tags, except, info, sort, loadingimg) VALUES ('$id', '$name', '$tags', '$except', '$info', '$sort', '$loadingimg');")) {
                 echo mysqli_error($db) . "<br>";
             } else {
                 echo "Import Album '$name'<br>";
@@ -128,6 +130,12 @@ if($data) {
         }
         if($array['info']) {
             $item['info'] = $array['info'];
+        }
+        if($array['sort']) {
+            $item['sort'] = $array['sort'];
+        }
+        if($array['loadingimg']) {
+            $item['loadingimg'] = $array['loadingimg'];
         }
     	$data_album[$i] = $item;
     }

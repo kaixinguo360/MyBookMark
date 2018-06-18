@@ -5,12 +5,14 @@ $name = $_GET['name'];
 $info = $_GET['info'];
 $tags = $_GET['tags'];
 $except = $_GET['except'];
+$sort = $_GET['sort'];
+$loadingimg = $_GET['loadingimg'];
 $need_edit = $_GET['need_edit'];
 
 # Check Data
 if($name && !$need_edit) {
     # Add to Database
-    $added = run_sql("INSERT INTO $album_table (name, info, tags, except) VALUES ('$name', '$info', '$tags', '$except');");
+    $added = run_sql("INSERT INTO $album_table (name, info, tags, except, sort, loadingimg) VALUES ('$name', '$info', '$tags', '$except', '$sort', '$loadingimg');");
 }
 
 ?>
@@ -40,6 +42,17 @@ alert(window.clipboardData.getData("text"));
         </div>
         <div class='form-group' id='inputdiv'>
             <input class='form-control inputbox' id='except' placeholder='Except' type='text' name='except' value='$except' autocomplete='off' />
+        </div>
+        <div class='form-group' id='inputdiv'>
+            <select class='form-control' name='sort'>
+                <option value=''>默认排序</option>
+                <option value='DESC'>最新在前</option>
+                <option value='ASC'>最旧在前</option>
+                <option value='RAND'>随机</option>
+            </select>
+        </div>
+        <div class='form-group' id='inputdiv'>
+            <input class='form-control inputbox' id='loadingimg' placeholder='Loadingimg' type='text' name='loadingimg' value='$loadingimg' autocomplete='off' />
         </div>
         <div class='form-group' id='inputdiv'>
             <textarea class='form-control inputbox' id='info' placeholder='Info' type='text' name='info' style='height:40%;'>$info</textarea>
