@@ -17,6 +17,13 @@ $tags = $_GET["tags"];
 $except = $_GET["except"];
 $album = $_GET["album"];
 
+if($album == $_COOKIE["album"] && is_numeric($_COOKIE["last_location"])) {
+    $init_location = $_COOKIE["last_location"];
+} else {
+    $init_location = 10;
+}
+setcookie("album", $album, time()+60*60*24*30);
+
 # Get Cookies
 $sort = $_COOKIE["sort"];
 $loadingimg = $_COOKIE["loadingimg"];
@@ -58,13 +65,6 @@ if($album) {
 # Set Sort Mode
 $sort = isset($_GET["sort"]) ? $_GET["sort"] : $sort;
 $loadingimg = isset($_GET["loadingimg"]) ? $_GET["loadingimg"] : $loadingimg;
-if($sort == "RAND") {
-    $sort_sql = " ORDER BY RAND()";
-} else if($sort == "ASC") {
-    $sort_sql = " ORDER BY $data_table.time ASC";
-} else {
-    $sort_sql = " ORDER BY $data_table.time DESC";
-}
 
 # Get Data
 if($tags  || $except || $album_tags || $album_except) {
@@ -92,7 +92,7 @@ if($tags  || $except || $album_tags || $album_except) {
             $except_to_organize = implode(",", $except);
             $tag_title .= $except ? (",-" . implode(",-", $except)) : "";
         }
-        $result=$db->query("SELECT $data_table.id,info,url FROM $data_table WHERE $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", array_merge($except ? $except : array(), $album_except)) ."'))$album_sql GROUP BY $data_table.id$sort_sql;");
+        //$result=$db->query("SELECT $data_table.id,info,url FROM $data_table WHERE $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", array_merge($except ? $except : array(), $album_except)) ."'))$album_sql GROUP BY $data_table.id$sort_sql;");
     } else if($count == 1) {
         foreach($tags as $tag) {
             if($tag == "_NULL_") {
@@ -127,18 +127,18 @@ if($tags  || $except || $album_tags || $album_except) {
             }
             $except_to_organize = implode(",", $except);
             $tag_title .= $except ? (",-" . implode(",-", $except)) : "";
-            $except_sql = " AND $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", array_merge($except, $album_except)) ."'))";
+            //$except_sql = " AND $data_table.id NOT IN (SELECT $data_table.id FROM $data_table, $map_table, $tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ('". implode("','", array_merge($except, $album_except)) ."'))";
         }
-        $result=$db->query("SELECT $data_table.id,$data_table.info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql)$except_sql$album_sql GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count$sort_sql;");
+        //$result=$db->query("SELECT $data_table.id,$data_table.info,url FROM $data_table,$map_table,$tag_table WHERE $map_table.data_id=$data_table.id AND $map_table.tag_id=$tag_table.id AND $tag_table.name IN ($sql)$except_sql$album_sql GROUP BY $data_table.id HAVING COUNT($tag_table.name)=$count$sort_sql;");
     }
 } else {
 	$result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN ('')$album_sql$sort_sql;");
 }
 
-# Check Data
-if(!$result)  {
-	exit('Error:<br>'.mysqli_error($db));
-}
+//# Check Data
+//if(!$result)  {
+//	exit('Error:<br>'.mysqli_error($db));
+//}
 
 # Get Tags
 $result_tag = $db -> query("SELECT name FROM $tag_table;");
@@ -156,16 +156,18 @@ for ($i = 0; $i < $result_tag -> num_rows; $i++) {
 
 <script>
 function init() {
-    if($(window).width() > 404) {
+    if($('.grid').children().length > 0) {
+        if($(window).width() > 404) {
         $('.grid-item').width('200px');
-    } else {
-        $('.grid-item').width($('.grid-div').width() / 2 - 10);
+        } else {
+            $('.grid-item').width($('.grid-div').width() / 2 - 10);
+        }
+        $('.grid').masonry({
+            gutter: 8,
+            itemSelector: '.grid-item',
+            fitWidth: true,
+        });
     }
-    $('.grid').masonry({
-        gutter: 8,
-        itemSelector: '.grid-item',
-        fitWidth: true,
-    });
     $('.tags').masonry({
         gutter: 8,
         itemSelector: '.tag',
@@ -181,7 +183,7 @@ function resize_tags() {
 $().ready(function() {
     init();
     $('img').each(function() {
-        this.addEventListener('load', resize, true);
+        this.addEventListener('load', function(){alert("aaaaa");}, true);
     });
     $("#show_tag").click(function() {
         $(".tags").slideToggle(0, resize_tags);
@@ -237,7 +239,7 @@ $(window).resize(init);
             ?>
         </div>
 	</div>
-    <div style='margin-top:16px;'>
+	<div style='margin-top:16px;'>
 	    <?php
         if($tags || $except) {
             $tags_to_album = implode(',', array_merge($tags ? $tags : array(), $album_tags));
@@ -261,26 +263,78 @@ $(window).resize(init);
     }
     if($tag_info) echo "<div style='margin-top:16px;'>". nl2br($tag_info) ."</div>";
     ?>
-	
-    <?php
-    #Display Data
-    if($result -> num_rows) {
-        echo "<div class='grid' style='margin-top:16px;'>";
-        for ($i = 0; $i < $result -> num_rows; $i++) {
-        	$array = $result -> fetch_array();
-        	$id = $array['id'];
-        	$url = $array['url'];
-        	$info = $array['info'];
-            $info = strip_tags($info);
-            if(mb_strlen($info) > 50) {
-                $info = mb_substr($info, 0, 50) . "...";
-            }
-        	item_image($url, $info, "?action=img&id=$id", $loadingimg);
-        }
-        echo "</div>";
-    } else {
-        echo "<div style='color:#808080;margin-top:30px;margin-bottom:20px;'>没有图片</div>";
+	<div class='grid' style='margin-top:16px;'>
+	</div>
+	<div style='margin-top:16px;'>
+	    <div class='btn btn-info' id='more'>
+	        More
+	    </div>
+	</div>
+</div>
+<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script>
+
+function addItem(item) {
+    img_class = item.info!="" ? "grid-item-img" : "grid-item-img-only";
+    
+    var new_item = $("<div class='grid-item lazyload' data-expand='1000'><a href='?action=img&id=" + item.id + "'>" + 
+    "<img class='lazyload " + img_class + "'" + 
+    (loadingimg!="" ? " src='<?php echo $loadingimg; ?>'" : "") +
+    " data-src='" + item.url + "'/>" +
+    (item.info!="" ? "<div class='grid-item-info'><p>" + item.info + "</p></div>" : "") + 
+    "</a></div>");
+    
+    $(".grid").append(new_item);
+    
+    if(inited) {
+        $(".grid").masonry('appended', new_item);
     }
     
-    ?>
-</div>
+    data_location++;
+}
+
+
+<?php
+echo "
+function loadMore(length) {
+    $.ajax({
+        url: './data.php?type=list&tags=".$_GET['tags']."&except=".$_GET['except']."&album=$album&sort=$sort&location=' + data_location + '&length=' + length,
+        type: 'GET',
+        dataType: 'JSON',
+        success: function(data) {
+            if(data != null) {
+                data.forEach(function(item){
+                    addItem(item);
+                });
+                if(!inited) {
+                    inited = true;
+                }
+            } else {
+                $('#more').html('没有更多了');
+            }
+            $.cookie('last_location', data_location);
+            init();
+            $('#more').show();
+        },
+        error: function() {
+            
+        }
+    });
+}
+inited = false;
+loadingimg = '$loadingimg';
+data_location = ". ($init_location - 10) .";
+default_length = 10;
+
+
+$().ready(function(){
+    loadMore($init_location);
+    $('#more').click(function () {
+        loadMore(default_length);
+        $('#more').hide();
+    });
+}
+";
+?>);
+
+</script>
