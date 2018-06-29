@@ -265,9 +265,12 @@ $(window).resize(init);
     ?>
 	<div class='grid' style='margin-top:16px;'>
 	</div>
-	<div style='margin-top:16px;'>
+	<div style='margin:80px 0 32px 0;'>
 	    <div class='btn btn-info' id='more'>
-	        More
+	        &nbsp;&nbsp;&nbsp;More&nbsp;&nbsp;&nbsp;
+	    </div>
+	    <div class='btn btn-info' id='loading' hidden=true>
+	        &nbsp;&nbsp;&nbsp;Loading...&nbsp;&nbsp;&nbsp;
 	    </div>
 	</div>
 </div>
@@ -297,6 +300,9 @@ function addItem(item) {
 <?php
 echo "
 function loadMore(length) {
+	if(no_more) return;
+	$('#more').hide();
+	$('#loading').show();
     $.ajax({
         url: './data.php?type=list&tags=".$_GET['tags']."&except=".$_GET['except']."&album=$album&sort=$sort&location=' + data_location + '&length=' + length,
         type: 'GET',
@@ -310,31 +316,55 @@ function loadMore(length) {
                     inited = true;
                 }
             } else {
-                $('#more').html('没有更多了');
+                $('#more').html('&nbsp;&nbsp;&nbsp;没有更多了&nbsp;&nbsp;&nbsp;');
+                no_more = true;
             }
             $.cookie('last_location', data_location);
             init();
             $('#more').show();
+            $('#loading').hide();
         },
         error: function() {
             
         }
     });
 }
+
 inited = false;
 loadingimg = '$loadingimg';
 data_location = ". ($init_location - 10) .";
+no_more = false;
 default_length = 10;
 
 
 $().ready(function(){
-    loadMore($init_location);
+    loadMore(default_length);
     $('#more').click(function () {
+        no_more = false;
         loadMore(default_length);
-        $('#more').hide();
     });
-}
+});
 ";
-?>);
+?>
+
+var screen = window.screen.height;//可视区域高度
+var compare = document.body.clientHeight-document.body.scrollTop;//可视区域顶部距离整个网页的底部距离
+
+var loadState = null;//记录加载状态的变量
+window.onscroll = function(){
+ //如果接近底部
+ if(screen+100 >= compare){
+  //如果加载状态为null,则可以继续加载
+  if(!loadState){
+   loadState = setTimeout(function(){
+    //这里填写你所需要的操作...
+    loadMore(default_length);
+    //下面的是必须的
+    clearTimeout(loadState);
+    loadState = null;//设置为空,否则清除掉也没用
+   },2000);
+  }
+ }
+}
 
 </script>
