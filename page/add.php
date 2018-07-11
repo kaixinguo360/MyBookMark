@@ -6,6 +6,7 @@ $url = $_GET['url'];
 $tags = $_GET['tags'];
 $source = $_GET['source'];
 $need_edit = $_GET['need_edit'];
+$nsfw = $_COOKIE['nsfw'] ? $_COOKIE['nsfw'] : 0;
 
 if($models_add) {
     foreach($models_add as $model) {
@@ -23,7 +24,7 @@ if($url && !$need_edit) {
 } else {
     # Get All Tags
     unset($tags);
-    $result = $db -> query("SELECT name FROM $tag_table;");
+    $result = $db -> query("SELECT name FROM $tag_table WHERE nsfw <= $nsfw;");
     for($i = 0; $i < $result -> num_rows; $i++) {
     	$tags[$result -> fetch_array()['name']] = "";
     }

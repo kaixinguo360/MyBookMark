@@ -8,11 +8,12 @@ $except = $_GET['except'];
 $sort = $_GET['sort'];
 $loadingimg = $_GET['loadingimg'];
 $need_edit = $_GET['need_edit'];
+$nsfw = $_GET['nsfw'];
 
 # Check Data
 if($name && !$need_edit) {
     # Add to Database
-    $added = run_sql("INSERT INTO $album_table (name, info, tags, except, sort, loadingimg) VALUES ('$name', '$info', '$tags', '$except', '$sort', '$loadingimg');");
+    $added = run_sql("INSERT INTO $album_table (name, info, tags, except, sort, loadingimg, nsfw) VALUES ('$name', '$info', '$tags', '$except', '$sort', '$loadingimg', '$nsfw');");
 }
 
 ?>
@@ -49,6 +50,12 @@ alert(window.clipboardData.getData("text"));
                 <option value='DESC'>最新在前</option>
                 <option value='ASC'>最旧在前</option>
                 <option value='RAND'>随机</option>
+            </select>
+        </div>
+        <div class='form-group' id='inputdiv'>
+            <select class='form-control' name='nsfw'>
+                <option value='0'>No NSFW</option>
+                <option value='1'>Include NSFW</option>
             </select>
         </div>
         <div class='form-group' id='inputdiv'>

@@ -4,7 +4,7 @@
 
 # ReFresh Settings
 if(!$_COOKIE["updated"]) {
-    $result_settings = run_sql("SELECT name, value FROM $setting_table WHERE name IN ('sort', 'loadingimg')");
+    $result_settings = run_sql("SELECT name, value FROM $setting_table WHERE name IN ('sort', 'loadingimg', 'nsfw')");
     for ($i = 0; $i < $result_settings -> num_rows; $i++) {
     	$array = $result_settings -> fetch_array();
     	setcookie($array["name"], $array["value"], time()+60*60*24*30);
@@ -16,6 +16,7 @@ if(!$_COOKIE["updated"]) {
 $tags = $_GET["tags"];
 $except = $_GET["except"];
 $album = $_GET["album"];
+$nsfw = $_COOKIE['nsfw'] ? $_COOKIE['nsfw'] : 0;
 
 if($album == $_COOKIE["album"] && is_numeric($_COOKIE["last_location"])) {
     $init_location = $_COOKIE["last_location"];
@@ -141,7 +142,7 @@ if($tags  || $except || $album_tags || $album_except) {
 //}
 
 # Get Tags
-$result_tag = $db -> query("SELECT name FROM $tag_table;");
+$result_tag = $db -> query("SELECT name FROM $tag_table WHERE nsfw <= $nsfw;");
 
 # Check Data
 if(!$result_tag)  {
@@ -304,7 +305,7 @@ function loadMore(length) {
 	$('#more').hide();
 	$('#loading').show();
     $.ajax({
-        url: './data.php?type=list&tags=".$_GET['tags']."&except=".$_GET['except']."&album=$album&sort=$sort&location=' + data_location + '&length=' + length,
+        url: './data.php?type=list&tags=".$_GET['tags']."&except=".$_GET['except']."&album=$album&sort=$sort&location=' + data_location + '&length=' + length + '&nsfw=' + nsfw,
         type: 'GET',
         dataType: 'JSON',
         success: function(data) {
@@ -332,9 +333,10 @@ function loadMore(length) {
 
 inited = false;
 loadingimg = '$loadingimg';
-data_location = ". ($init_location - 10) .";
+data_location = ". ($init_location > 20 ? ($init_location - 20) : 0) .";
 no_more = false;
 default_length = 10;
+nsfw = $nsfw;
 
 
 $().ready(function(){

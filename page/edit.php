@@ -6,6 +6,7 @@ $info = $_GET['info'];
 $url = $_GET['url'];
 $source = $_GET['source'];
 $id = $_GET['id'];
+$nsfw = $_COOKIE['nsfw'] ? $_COOKIE['nsfw'] : 0;
 
 # Check Data
 if(isset($_GET['info'])) {
@@ -13,7 +14,7 @@ if(isset($_GET['info'])) {
     $updated = update_item($id, $url, $info, $tags, $source);
 } else {
     # Get All Tags
-    $result = $db -> query("SELECT name FROM $tag_table;");
+    $result = $db -> query("SELECT name FROM $tag_table WHERE nsfw <= $nsfw;");
     for ($i = 0; $i < $result -> num_rows; $i++) {
     	$tags[$result -> fetch_array()['name']] = "";
     }

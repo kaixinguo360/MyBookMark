@@ -72,6 +72,7 @@ $tags = $_GET["tags"];
 $except = $_GET["except"];
 $album = $_GET["album"];
 $sort_mode = $_COOKIE["sort_mode"];
+$nsfw = $_COOKIE['nsfw'] ? $_COOKIE['nsfw'] : 0;
 
 if($sort_mode == "RAND") {
     $sort_sql = " ORDER BY RAND()";
@@ -111,6 +112,16 @@ if($album) {
 } else {
 	require("./page/common/albums.php");
 	exit();
+}
+
+# NSFW?
+$nsfw_except = array();
+if(is_numeric($nsfw)) {
+    $result_nsfw = $db -> query("SELECT name FROM $tag_table WHERE nsfw > $nsfw;");
+    for ($i = 0; $i < $result_nsfw -> num_rows; $i++) {
+    	$nsfw_except[$i] = $result_nsfw -> fetch_array()['name'];
+    }
+    $album_except = array_merge($album_except, $nsfw_except);
 }
 
 # Get Data
@@ -197,7 +208,7 @@ if($tags  || $except || $album_tags || $album_except) {
         $imgs[$i] = $img;
     }
     
-    $result = $db -> query("SELECT name FROM $tag_table;");
+    $result = $db -> query("SELECT name FROM $tag_table WHERE nsfw <= $nsfw;");
     for ($i = 0; $i < $result -> num_rows; $i++) {
     	$tags_all[$result -> fetch_array()['name']] = "";
     }

@@ -1,6 +1,6 @@
 <?php
 
-$result = run_sql("SELECT id, info, name FROM $album_table;");
+$result = run_sql("SELECT id, info, name FROM $album_table WHERE nsfw <= $nsfw;");
 if($result) {
 	for ($i = 0; $i < $result -> num_rows; $i++) {
 		$array = $result -> fetch_array();

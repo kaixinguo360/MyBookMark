@@ -8,12 +8,13 @@ $tags = $_GET['tags'];
 $except = $_GET['except'];
 $sort = $_GET['sort'];
 $loadingimg = $_GET['loadingimg'];
+$nsfw = $_GET['nsfw'];
 
 if(isset($_GET['name']) && $album) {
-    $result = $db -> query("UPDATE $album_table SET name='$name', tags='$tags', except='$except', info='$info', sort='$sort', loadingimg='$loadingimg' WHERE name='$album';");
+    $result = $db -> query("UPDATE $album_table SET name='$name', tags='$tags', except='$except', info='$info', sort='$sort', loadingimg='$loadingimg', nsfw='$nsfw' WHERE name='$album';");
     jump_with_text("更新" . ($result ? "成功" : "失败"), "?tags=" . ($new_name ? $new_name : $tag));
 } else {
-    $result = $db -> query("SELECT name, tags, except, info, sort, loadingimg FROM $album_table WHERE name='$album';");
+    $result = $db -> query("SELECT name, tags, except, info, sort, loadingimg, nsfw FROM $album_table WHERE name='$album';");
     if($result) {
         $array = $result -> fetch_array();
         $name = $array['name'];
@@ -22,6 +23,7 @@ if(isset($_GET['name']) && $album) {
         $info = $array['info'];
         $sort = $array['sort'];
         $loadingimg = $array['loadingimg'];
+        $nsfw = $array['nsfw'];
     }
 }
 
@@ -49,6 +51,12 @@ echo "
                 <option value='DESC' ". (($sort=='DESC') ? "selected='selected'" : "" ) .">最新在前</option>
                 <option value='ASC' ". (($sort=='ASC') ? "selected='selected'" : "" ) .">最旧在前</option>
                 <option value='RAND' ". (($sort=='RAND') ? "selected='selected'" : "" ) .">随机</option>
+            </select>
+        </div>
+        <div class='form-group' id='inputdiv'>
+            <select class='form-control' name='nsfw'>
+                <option value='0' ". (($nsfw=='0') ? "selected='selected'" : "" ) .">No NSFW</option>
+                <option value='1' ". (($nsfw=='1') ? "selected='selected'" : "" ) .">Include NSFW</option>
             </select>
         </div>
         <div class='form-group' id='inputdiv'>

@@ -48,7 +48,7 @@ item("<img class='lazyload $img_class'". ($loadingimg ? " src='$loadingimg'" : "
 
 function item_image_linked($url, $info, $link_url) {
 $img_class = $info ? "grid-item-img" : "grid-item-img-only";
-item("<a href='$link_url'><img class='lazyload $img_class' style='width:100%;min-height:100px;' src='$url'/></a>"
+item("<a href='$link_url' target='_BLANK'><img class='lazyload $img_class' style='width:100%;min-height:100px;' src='$url'/></a>"
     .($info ? "<div class='grid-item-info'><p>$info</p></div>" : "")
 );
 }

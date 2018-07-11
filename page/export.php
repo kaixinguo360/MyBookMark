@@ -34,7 +34,8 @@ if($data) {
             $id = $item['id'];
             $name = $item['name'];
             $info = $item['info'];
-            if(!$db -> query("INSERT INTO $tag_table (id, name, info) VALUES ('$id', '$name', '$info');")) {
+            $nsfw = $item['nsfw'] ? $item['nsfw'] : 0;
+            if(!$db -> query("INSERT INTO $tag_table (id, name, info, nsfw) VALUES ('$id', '$name', '$info', '$nsfw');")) {
                 echo mysqli_error($db) . "<br>";
             } else {
                 echo "Import Tag '$name'<br>";
@@ -63,7 +64,8 @@ if($data) {
             $info = $item['info'];
             $sort = $item['sort'];
             $loadingimg = $item['loadingimg'];
-            if(!$db -> query("INSERT INTO $album_table (id, name, tags, except, info, sort, loadingimg) VALUES ('$id', '$name', '$tags', '$except', '$info', '$sort', '$loadingimg');")) {
+            $nsfw = $item['nsfw'] ? $item['nsfw'] : 0;
+            if(!$db -> query("INSERT INTO $album_table (id, name, tags, except, info, sort, loadingimg, nsfw) VALUES ('$id', '$name', '$tags', '$except', '$info', '$sort', '$loadingimg', '$nsfw');")) {
                 echo mysqli_error($db) . "<br>";
             } else {
                 echo "Import Album '$name'<br>";
@@ -97,7 +99,7 @@ if($data) {
     	$item['time'] = $array['time'];
     	$data_data[$array['id']] = $item;
     }
-    $result = $db -> query("SELECT id, name, info FROM $tag_table;");
+    $result = $db -> query("SELECT id, name, info, nsfw FROM $tag_table;");
     for ($i = 0; $i < $result -> num_rows; $i++) {
     	$array = $result -> fetch_array();
     	unset($item);
@@ -106,6 +108,7 @@ if($data) {
     	if($array['info']) {
     	    $item['info'] = $array['info'];
     	}
+    	$item['nsfw'] = $array['nsfw'];
     	$data_tag[$i] = $item;
     }
     $result = $db -> query("SELECT data_id, tag_id FROM $map_table;");
@@ -137,6 +140,7 @@ if($data) {
         if($array['loadingimg']) {
             $item['loadingimg'] = $array['loadingimg'];
         }
+        $item['nsfw'] = $array['nsfw'];
     	$data_album[$i] = $item;
     }
     $result = $db -> query("SELECT name, value FROM $setting_table;");

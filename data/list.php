@@ -7,6 +7,7 @@ $album = $_GET["album"];
 $sort = $_GET["sort"];
 $location = $_GET["location"];
 $length = $_GET["length"] ? $_GET["length"] : 10;
+$nsfw = $_GET["nsfw"];
 
 if(is_numeric($location) && is_numeric($length)) {
     $limit_sql = " LIMIT $location, $length";
@@ -46,6 +47,16 @@ if($album) {
 } else {
 	require("./page/common/albums.php");
 	exit();
+}
+
+# NSFW?
+$nsfw_except = array();
+if(is_numeric($nsfw)) {
+    $result_nsfw = $db -> query("SELECT name FROM $tag_table WHERE nsfw > $nsfw;");
+    for ($i = 0; $i < $result_nsfw -> num_rows; $i++) {
+    	$nsfw_except[$i] = $result_nsfw -> fetch_array()['name'];
+    }
+    $album_except = array_merge($album_except, $nsfw_except);
 }
 
 # Set Sort Mode
@@ -91,7 +102,7 @@ if($count == 0) {
             $tag_title = "无标签";
             $tag_to_add = "";
             $tag_to_organize = $tag;
-            $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table)$album_sql$sort_sql;");
+            $result=$db->query("SELECT id,info,url FROM $data_table WHERE id NOT IN (SELECT data_id FROM $map_table)$album_sql$sort_sql$limit_sql;");
             $is_null = TRUE;
         } else {
             $allow_edit = TRUE;
