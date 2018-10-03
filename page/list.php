@@ -18,12 +18,16 @@ $except = $_GET["except"];
 $album = $_GET["album"];
 $nsfw = $_COOKIE['nsfw'] ? $_COOKIE['nsfw'] : 0;
 
+# Save Prams
+setcookie("tags", $tags, time()+60*60*24*30);
+setcookie("except", $except, time()+60*60*24*30);
+setcookie("album", $album, time()+60*60*24*30);
+
 if($album == $_COOKIE["album"] && is_numeric($_COOKIE["last_location"])) {
     $init_location = $_COOKIE["last_location"];
 } else {
     $init_location = 10;
 }
-setcookie("album", $album, time()+60*60*24*30);
 
 # Get Cookies
 $sort = $_COOKIE["sort"];
@@ -159,7 +163,7 @@ for ($i = 0; $i < $result_tag -> num_rows; $i++) {
 function init() {
     if($('.grid').children().length > 0) {
         if($(window).width() > 404) {
-        $('.grid-item').width('200px');
+            $('.grid-item').width('250px');
         } else {
             $('.grid-item').width($('.grid-div').width() / 2 - 10);
         }
@@ -281,7 +285,7 @@ $(window).resize(init);
 function addItem(item) {
     img_class = item.info!="" ? "grid-item-img" : "grid-item-img-only";
     
-    var new_item = $("<div class='grid-item lazyload' data-expand='1000'><a href='?action=img&id=" + item.id + "'>" + 
+    var new_item = $("<div class='grid-item lazyload' data-expand='1000'><a href='?action=img&location=" + data_location + "&id=" + item.id + "'>" +
     "<img class='lazyload " + img_class + "'" + 
     (loadingimg!="" ? " src='<?php echo $loadingimg; ?>'" : "") +
     " data-src='" + item.url + "'/>" +

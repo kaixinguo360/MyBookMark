@@ -1,7 +1,7 @@
-MyBookmark
+MyPin
 =====
 
-- Description: This is a simple online bookmark server writen in PHP.
+- Description: This is a simple online picture collection like Pinterest writen with PHP.
 
 *****
 

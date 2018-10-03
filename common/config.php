@@ -2,10 +2,10 @@
 
 # Set MySQL Server
 define("DB_HOST", "localhost");
-define("DB_USER", "test");
+define("DB_USER", "mypin");
 define("DB_PASS", "1234567");
-define("DB_NAME", "test");
-define("TB_PREFIX", "test_");
+define("DB_NAME", "mypin");
+define("TB_PREFIX", "mypin_");
 define("ROOT_USER", "root");
 
 # Set Models
